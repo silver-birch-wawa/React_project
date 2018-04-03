@@ -113,7 +113,8 @@ class Aside extends Component{
 		super(props);
 		this.state={
 			// 如果是稿件分配，则
-			// isdistributed(1/0),author_name,paper-name,paper-status,editor
+			// ['Module_name',[status(1/0),author_name,paper-name,(editor'sname)],[...]]
+
 			content:["distributePaper",[[1,'Tom','java'],[7,'Jack','PHPPHPPHPPHPPHPPHPPHPPHPPHPPHP','Jack`s editor'],[7,'Alex','PSIDPSIDPSIDSIDSODIS','Alex`s editor'],[4,'Jason','PythonPythonPythonPythonPythonPythonPython','Jason`s editor']],['none','Tom111111','Tom2','Tom3']]
 			,data:[]
 		}
@@ -207,8 +208,8 @@ class HasDistributed extends Component{
    constructor(props){
    	 super(props);
    	 this.status_code={1:'未分配',2:'审阅中',3:'未通过',4:'待修改',5:'通过',6:'格式确认',7:'已缴费'}
-   	 this.td_width=['3rem','3rem','9rem','3rem']
-   	 this.title=['状态','作者名','稿件名','负责编辑']
+   	 this.td_width=['3rem','9rem','3rem']
+   	 this.title=['作者名','稿件名','负责编辑']
    	 this.container_finished=[]
    	 this.editors=[]
    	 this.state={"contents":[]}
@@ -230,7 +231,7 @@ class HasDistributed extends Component{
 			    	this.container_finished.push(
 		            <tr>
              		   { 
-             		   	 contents[index].map((item,i)=>{if(i<2){return (<td key={i} style={{'width':this.td_width[i]}}>{contents[index][i]}</td>)}return (<td key={i}>{contents[index][i]}</td>)})
+             		   	 contents[index].map((item,i)=>{if(0<i){return (<td key={i} style={{'width':this.td_width[i]}}>{contents[index][i]}</td>)}})
              		   }
 		            </tr>
 		            )
@@ -272,8 +273,8 @@ class HasNotDistributed extends Component{
    	 this.contents=[]
    	 this.state={"contents":[],'container_unfinished':[],'none':'none'}
    	 this.status_code={1:'未分配',2:'审阅中',3:'未通过',4:'待修改',5:'通过',6:'格式确认',7:'已缴费'}
-   	 this.td_width=['3rem','3rem','9rem','3rem']
-   	 this.title=['状态','作者名','稿件名','负责编辑']
+   	 this.td_width=['3rem','9rem','3rem']
+   	 this.title=['作者名','稿件名','负责编辑']
    	 this.container_unfinished=[]
    	 this.choosed_editors={}
    	 this.upload_data={}
@@ -310,7 +311,7 @@ class HasNotDistributed extends Component{
 			    	this.state.container_unfinished.push(
 		            <tr>
              		   { 
-             		   	contents[index].map((item,i)=>{if(i<2){return (<td key={i} style={{'width':this.td_width[i]}}>{contents[index][i]}</td>)}if(i<3){return(<td key={i}>{contents[index][i]}</td>)}})
+             		   	contents[index].map((item,i)=>{if(i==0){return(<td key={i} style={{width:'2rem'}}>{contents[index][i]}</td>)}if(1<i){return(<td key={i}>{contents[index][i]}</td>)}})
              		   }
 		                <td class='td-select'>
 		                  <Select id={{index}} onChange={this.handleChange.bind(this)} labelInValue defaultValue={{key:this.state.none}}>

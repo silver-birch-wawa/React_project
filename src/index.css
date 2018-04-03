@@ -207,7 +207,12 @@
       border:1px solid #98bf21;    
       padding:4px 7px 5px 10px;     
       }
-
+    .ant-collapse > .ant-collapse-item > .ant-collapse-header{
+    	line-height: 4px !important;
+    }
+    td >.ant-collapse > .ant-collapse-item > .ant-collapse-header .arrow{
+    	display:none !important;
+    }
     #customers th 
       {
       font-size:0.7rem;

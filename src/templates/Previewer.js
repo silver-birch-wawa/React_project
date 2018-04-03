@@ -6,11 +6,13 @@ import { Select } from 'antd';
 import { Tabs } from 'antd';
 import ReactDOM from 'react-dom'
 import { DatePicker } from 'antd';
+import { Input } from 'antd';
 import axios from 'axios';
 const { MonthPicker, RangePicker } = DatePicker;
 const TabPane = Tabs.TabPane;
 const Option = Select.Option;
 const Panel = Collapse.Panel;
+const { TextArea } = Input;
 
 // 利用sessionstorage共享全局变量
 function obj_store(obj){
@@ -113,8 +115,9 @@ class Aside extends Component{
 		super(props);
 		this.state={
 			// 如果是稿件分配，则
-			// isdistributed(1/0),author_name,paper-name,paper-status,editor
-			content:["distributePaper",[[1,'Tom','java'],[7,'Jack','PHPPHPPHPPHPPHPPHPPHPPHPPHPPHP','Jack`s editor'],[7,'Alex','PSIDPSIDPSIDSIDSODIS','Alex`s editor'],[4,'Jason','PythonPythonPythonPythonPythonPythonPython','Jason`s editor']],['none','Tom111111','Tom2','Tom3']]
+			// [Module_name,[author_name,paper-name,links]]
+			//
+			content:["Check_paper",[['Tom','java','http://www.baidu.com'],['Jack','PHPPHPPHPPHPPHPPHPPHPPHPPHPPHP','http://www.baidu.com'],['Alex','PSIDPSIDPSIDSIDSODIS','http://www.126.com'],['Jason','PythonPythonPythonPythonPython','http://www.163.com']],['none','Tom111111','Tom2','Tom3']]
 			,data:[]
 		}
 		//sessionStorage.clear();
@@ -183,11 +186,11 @@ class Aside extends Component{
    	    <aside>
 	        <Collapse accordion defaultActiveKey={['1']}>
 			    <Panel header={<p style={{marginBottom:'0em',marginRight:'1rem'}}>目录</p>} id="menu" key="1">		           		           
-		           <div class="catalog" id="check_paper" onClick={this.action.bind(this,'check_paper')} ref='check_paper'>
+		           <div class="catalog" id="check_paper" onClick={this.action.bind(this,'Check_paper')} ref='Check_paper'>
 		                <Icon type="clock-circle-o" />&nbsp;
 		                稿件审理
 		           </div>
-		           <div class="catalog" id="re_check_paper" onClick={this.action.bind(this,'re_check_paper')} ref='re_check_paper'>
+		           <div class="catalog" id="re_check_paper" onClick={this.action.bind(this,'Re_check_paper')} ref='Re_check_paper'>
 		                <Icon type="clock-circle" />&nbsp;
 		                稿件重审
 		           </div>
@@ -200,67 +203,66 @@ class Aside extends Component{
 }
 
 class Re_check_paper extends Component{
-    constructor(props){
-   	    super(props);
-	   	this.status_code={1:'未分配',2:'审阅中',3:'未通过',4:'待修改',5:'通过',6:'格式确认',7:'已缴费'}
-	   	this.td_width=['3rem','3rem','9rem','3rem']
-	   	this.title=['状态','作者名','稿件名','负责编辑']
-   	    this.contents={};
-   	    this.editors=[];
-   	    this.container_finished=[]
-    }
-	show(contents){
-		    //排序后输出
-		    contents=contents.sort(function(a,b){return a[0]-b[0]});
-		    contents.map((item,index) => { 
-		        //console.log(contents);
-		        //item[0]=1
-		        /* table的行 */
-		        //alert(item[0])
-                var temp=item[0];
-                item[0]=this.status_code[item[0]];
-			    	this.container_finished.push(
-		            <tr>
-             		   { 
-             		   	contents[index].map((item,i)=>{if(i<2){return (<td key={i} style={{'width':this.td_width[i]}}>{contents[index][i]}</td>)}else{return (<td key={i}>{contents[index][i]}</td>)}})
-             		   }
-		            </tr>
-		            )
-             	item[0]=temp;
-		            //alert('container_unfinished'+this.container_unfinished.length)  
-		})
-   }
-	render(){
-		    //alert(this.props.content);
-		    if(this.props.content!=undefined){
-		    	    //console.log(this.props.content[1])
-				    this.contents=this.props.content[1].slice(0);
-			   		this.editors=this.props.content[2];    
-			   		this.show(this.contents);
-			}
-			return (
-				    	    	<div id='display-box'>
-								    	<table id="customers">
-							            <tr>
-							    
-				             	{
-				             		/* table的标题 */
-				             		this.title.map((item,i)=>{return (<th key={i} style={{'width':this.td_width[i]}}>{item}</th>)}
-				             			)
-				             	}
-							            </tr>
-							            {this.container_finished}
-									    </table>
-								</div>
-				    );
-				     // alert(this.props.content)
-		    }
-	
-}
-class Check_paper extends Component{
 		constructor(props){
 	   	    super(props);
 	   	    this.state={'contents':[],'container':[],'upload_data':[]};
+	   	    this.container=[];
+	   	    this.upload_data=[]
+	    }
+	    handleChange(value){
+           //console.log(value['key']); //2002
+           //console.log(value['label']); //通过未通过
+           let num=(value['key']-(value['key']%10000))/10000;
+           let label=value['label'];
+           //alert(this.container[num-1].length)
+           let signal=this.container[num-1].length;
+           if(label=='不通过'){
+           	    document.getElementById('TextArea-'+num).style.display='table-row';
+           	    if(signal==2){
+           	    	//alert('.,.,..,.,.')
+           	    	this.container[num-1].push('不通过');
+           	    }
+           	    // alert(this.container[num]);
+           	    else{
+           	    	//alert('?????');
+           	    	this.container[num-1].pop();
+           	    	this.container[num-1].push('不通过');
+           	    }
+           }
+           if(label=='通过'){
+           	    document.getElementById('TextArea-'+num).style.display='none';
+           	    if(signal==2){
+           	    	//alert('<<<<>>>>>>')
+           	    	this.container[num-1].push('通过');
+           	    }
+           	    // alert(this.container[num]);
+           	    else{
+           	    	//alert('??/////');
+           	    	this.container[num-1].pop();
+           	    	this.container[num-1].push('通过');
+           	    }
+           }
+	    }
+	    handleClick(num,e){
+	    	let number=num['temp'];
+	    	// console.log(num['temp']);
+	    	//alert('提交成功');
+	    	let upload_data=[]
+			for(let l=0;l<this.container.length;l++){
+				if(this.container[l].length>2){
+					console.log(this.container[l])
+					upload_data.push(this.container[l]);
+				}
+			}
+            // this.upload_data.push();
+	    }
+	    handleShrink(value,e){
+	    	console.log(value);  // 123
+	    	document.getElementsByClassName('ant-collapse-header')[value].click();
+	    	// document.getElementById('TextArea-'+value).style.display='none';
+	    	var text= document.getElementById('text-area'+value).value;
+	    	//alert(text);
+            this.container[value-1].push(text);
 	    }
 		render(){
 			//alert(this.props.content);
@@ -269,30 +271,48 @@ class Check_paper extends Component{
 				//alert(this.state.contents);
 		        {
 		        this.state.contents[1].map((items,i)=>{ 
-        		if(items[0]==7){
         			//alert(items);
+        			this.container.push(items);
         			this.state.upload_data.push(items);
         			//alert(this.state.upload_data);
 	        		this.state.container.push(
 	        			<tr key={i}>
 	            			{
+
 	            				items.map((item,j)=>{
-	            				if(j>0){
-		            				return(<td key={j}>{item}</td>)		    
-		            		           }
+		            				if(j<1){return(<td key={j}>{item}</td>)}
+		            				if(j==1){return(<td key={j}><a href={this.container[i][2]} target="_blank">{item}</a></td>)}
 		            		                        }
 		            		              
-	            		                            )
+	            		                )
 	            		    }
-	            		    
-			                <td class="timetable-calendar">  
-			                </td>
-	                	</tr>										
-	            	                          )
-                            }
-        	                                           })      
-        	    }
-			                                 }
+
+								<td class='td-select'>
+				                    <Select onChange={this.handleChange.bind(this)} labelInValue defaultValue={{key:this.state.none}}>
+								 	      <Option value={(i+1)*10000+1} style={{width:'100%'}}>通过</Option>
+								 	      <Option value={(i+1)*10000+2} style={{width:'100%'}}>不通过</Option>
+								    </Select>
+								</td>
+	                	</tr>
+	                	)
+		            let temp=i+1
+	                this.state.container.push(
+	                	<tr id={'TextArea-'+(i+1)} style={{display:'none'}}>
+	                	  <td colspan="3" width={{height:'0.1rem'}}>
+	                	  <Collapse bordered={false}>
+							    <Panel header="点击输入评论" key="3">
+							      	    <TextArea id={'text-area'+(i+1)} rows={4} placeholder="请输入本稿件不通过的理由"/>
+	                					<Button type="primary" style={{float:'right',marginTop:'10px',marginRight:'10px'}} onClick={this.handleShrink.bind(this,temp)}>确定</Button>
+							    </Panel>
+							</Collapse>
+	                	  </td>
+	                	</tr>
+	                	                      )
+                                                       })
+        	    }      
+	            			}
+        	    
+			                                 
 			return(
 				    <div class='white-back'>
 				          <div id='display-box'>
@@ -300,13 +320,143 @@ class Check_paper extends Component{
 				                <tr>
 				                <th>作者名</th>
 				                <th>稿件名</th>
-				                <th>责任编辑</th>
-				                <th>时间</th>
+				                <th>审核结果</th>
 				                </tr>
 				                {
 				                	this.state.container
 				                }
 				              </table>
+				              <Button type="primary" style={{float:'right',marginTop:'10px',marginRight:'10px'}} onClick={this.handleClick.bind(this)}>提交</Button>
+				          </div>
+				    </div>
+				)
+	        }
+	
+}
+class Check_paper extends Component{
+		constructor(props){
+	   	    super(props);
+	   	    this.state={'contents':[],'container':[],'upload_data':[]};
+	   	    this.container=[];
+	   	    this.upload_data=[]
+	    }
+	    handleChange(value){
+           //console.log(value['key']); //2002
+           //console.log(value['label']); //通过未通过
+           let num=(value['key']-(value['key']%10000))/10000;
+           let label=value['label'];
+           //alert(this.container[num-1].length)
+           let signal=this.container[num-1].length;
+           if(label=='不通过'){
+           	    document.getElementById('TextArea-'+num).style.display='table-row';
+           	    if(signal==3){
+           	    	//alert('.,.,..,.,.')
+           	    	this.container[num-1].push('不通过');
+           	    }
+           	    // alert(this.container[num]);
+           	    else{
+           	    	//alert('?????');
+           	    	this.container[num-1].pop();
+           	    	this.container[num-1].push('不通过');
+           	    }
+           }
+           if(label=='通过'){
+           	    document.getElementById('TextArea-'+num).style.display='none';
+           	    if(signal==3){
+           	    	//alert('<<<<>>>>>>')
+           	    	this.container[num-1].push('通过');
+           	    }
+           	    // alert(this.container[num]);
+           	    else{
+           	    	//alert('??/////');
+           	    	this.container[num-1].pop();
+           	    	this.container[num-1].push('通过');
+           	    }
+           }
+	    }
+	    handleClick(num,e){
+	    	let number=num['temp'];
+	    	// console.log(num['temp']);
+	    	//alert('提交成功');
+	    	let upload_data=[]
+			for(let l=0;l<this.container.length;l++){
+				if(this.container[l].length>3){
+					console.log(this.container[l])
+					upload_data.push(this.container[l]);
+				}
+			}
+            // this.upload_data.push();
+	    }
+	    handleShrink(value,e){
+	    	//console.log(value);  // 123
+	    	document.getElementsByClassName('ant-collapse-header')[value].click();
+	    	// document.getElementById('TextArea-'+value).style.display='none';
+	    	var text= document.getElementById('text-area'+value).value;
+	    	//alert(text);
+            this.container[value-1].push(text);
+	    }
+		render(){
+			//alert(this.props.content);
+			if(this.props.content!=undefined){
+				this.state.contents=this.props.content;
+				//alert(this.state.contents);
+		        {
+		        this.state.contents[1].map((items,i)=>{ 
+        			//alert(items);
+        			this.container.push(items);
+        			this.state.upload_data.push(items);
+        			//alert(this.state.upload_data);
+	        		this.state.container.push(
+	        			<tr key={i}>
+	            			{
+	            				items.map((item,j)=>{
+		            				if(j<1){return(<td key={j}>{item}</td>)}	
+		            				if(j==1){return(<td key={j}><a href={this.container[i][2]} target="_blank">{item}</a></td>)}		    
+		            		                        }
+		            		              
+	            		                )
+	            		    }
+
+								<td class='td-select'>
+				                    <Select onChange={this.handleChange.bind(this)} labelInValue defaultValue={{key:this.state.none}}>
+								 	      <Option value={(i+1)*10000+1} style={{width:'100%'}}>通过</Option>
+								 	      <Option value={(i+1)*10000+2} style={{width:'100%'}}>不通过</Option>
+								    </Select>
+								</td>
+	                	</tr>
+	                	)
+		            let temp=i+1
+	                this.state.container.push(
+	                	<tr id={'TextArea-'+(i+1)} style={{display:'none'}}>
+	                	  <td colspan="3" width={{height:'0.1rem'}}>
+	                	  <Collapse bordered={false}>
+							    <Panel header="点击输入评论" key="3">
+							      	    <TextArea id={'text-area'+(i+1)} rows={4} placeholder="请输入本稿件不通过的理由"/>
+	                					<Button type="primary" style={{float:'right',marginTop:'10px',marginRight:'10px'}} onClick={this.handleShrink.bind(this,temp)}>确定</Button>
+							    </Panel>
+							</Collapse>
+	                	  </td>
+	                	</tr>
+	                	                      )
+                                                       })
+        	    }      
+	            			}
+        	    
+			                                 
+			return(
+				    <div class='white-back'>
+				          <div id='display-box'>
+				              <table id="customers">
+				                <tr>
+				                <th>作者名</th>
+				                <th>稿件名</th>
+				                <th>审核结果</th>
+				                </tr>
+				                {
+				                	this.state.container
+				                }
+				              </table>
+				              <Button type="primary" style={{float:'right',marginTop:'10px',marginRight:'10px'}} onClick={this.handleClick.bind(this)}>提交</Button>
 				          </div>
 				    </div>
 				)
@@ -318,10 +468,6 @@ class Main extends Component{
     }
    constructor(props){
    	 super(props);
-
-   	 this.status_code={1:'未分配',2:'审阅中',3:'未通过',4:'待修改',5:'通过',6:'格式确认',7:'已缴费'};
-   	 this.td_width=['3rem','3rem','9rem','3rem'];
-   	 this.title=['状态','作者名','稿件名','负责编辑'];
    	 this.state={'contents':[],'changed':true};
    }
    change_the_other_component(){
@@ -335,14 +481,14 @@ class Main extends Component{
    	    if(this.state.contents[0]!=undefined){
    	    	//alert(this.props.content)
 		   	switch(this.props.content[0]){
-			        case "check_paper":return(
+			        case "Check_paper":return(
 			        						<main>
 			        							<div class='white-back'>
 			        								<Check_paper content={this.props.content}/>
 			        							</div>
 			        						</main>
 			        						);
-			        case "re_check_paper":return(
+			        case "Re_check_paper":return(
 			        							<main>
 			        								<div class='white-back'>
 			        									<Re_check_paper content={this.props.content}/>
