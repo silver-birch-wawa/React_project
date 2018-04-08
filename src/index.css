@@ -2,36 +2,42 @@
 	  font-family:'Comic Sans MS', cursive, sans-serif;
 	  padding: 20px;
 	  background: #f1f1f1;
-      height: 100%;
+      height:auto !important;
+      min-height:750px;
 	}
 	 html { 
 	 	font-size : 10px; 
-	 	overflow:hidden
+	 	/*overflow:hidden*/
 	 }
-	 .ant-collapse-content-box{
+	 aside .ant-collapse-content-box{
         padding-top: 0px !important;
      }
-     .ant-select{
+     aside .ant-collapse > .ant-collapse-item > .ant-collapse-header .arrow{
+     	margin-top:-10px !important;
+     }
+     #display-box .ant-select{
      	display:block !important;
      }
-     .ant-select-selection{
+     #display-box .ant-select-selection{
      	/*height:100%!important;*/
      	border-radius:0px !important;
         border:1px solid white!important;
      }
-     .ant-select-selection-selected-value{
+     #display-box .ant-select-selection-selected-value{
      	font-size:0.6rem;
      }
-     .ant-select-selection-selected-value{
+     #display-box .ant-select-selection-selected-value{
      	text-align: center;
      }
-    .ant-tabs{
+
+    .white-back .ant-tabs{
     	background-color: white;
     	border:1px solid grey!important;
     	border-radius:5px;
+    	height:100%;
     	padding:0.5rem 0.5rem 0.5rem 0.5rem !important;
     }
-    .ant-tabs-tab{
+    .white-back .ant-tabs-tab{
     	font-family:'Comic Sans MS', cursive, sans-serif;
     	font-size:0.5rem;
     }
@@ -79,7 +85,27 @@
 
 	    border-radius: 5px;
 	    border: 1px solid grey;
-    }
+        }
+	    middleForm{
+	    	padding-left:10%;
+	    	padding:20px;
+	    	background-color: white;
+	    	font-family: 'Comic Sans MS', cursive, sans-serif;
+	    }		
+	    .form-section{
+	    	display:flex;
+	    	font-size:6px;
+	    	flex-direction:row;
+	    }
+	    .white-back{
+	    	height:100%;
+	    	overflow: scroll;
+	    	background-color: white;
+	    	padding-top: 0.5rem;
+	        padding-left: 0.5rem;
+	        padding-right: 0.5rem;
+	        padding-bottom: 0.5rem;
+	    }
         #display-box{
         	padding:0px !important;
         }
@@ -128,7 +154,24 @@
 
 	    border-radius: 5px;
 	    border: 1px solid grey;
-    }
+        }
+	    .white-back{
+	    	height:100%;
+	    	overflow: hidden;
+	    	background-color: white;
+	    	padding-top: 0.5rem;
+	        padding-left: 0.5rem;
+	        padding-right: 0.5rem;
+	        padding-bottom: 0.5rem;
+	    }        
+        middleForm{
+        font-family: 'Comic Sans MS', cursive, sans-serif;
+    	margin-top: 20px;
+    	width:60%;
+    	margin-left:20%;
+    	padding-left:10%;
+    	background-color:white;
+        }
 	  }
 	 .body{
 	  font-family:'Comic Sans MS', cursive, sans-serif;
@@ -158,6 +201,11 @@
       height:100%;
       font-family: 'Comic Sans MS', cursive, sans-serif;
 	  }
+	.form-section{
+		display:flex;
+		font-size:20px;
+		flex-direction:row;
+	}
 	section{
         height:1.5rem;
 	  	flex-direction: column;
@@ -178,14 +226,7 @@
       background-color: white;
 
     }
-    .white-back{
-    	height:100%;
-    	background-color: white;
-    	padding-top: 0.5rem;
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
-        padding-bottom: 0.5rem;
-    }
+
     #display-box{
       border: 1px solid grey;
       padding: 10px;

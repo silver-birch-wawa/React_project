@@ -7,6 +7,7 @@ import Author from '../templates/Author';
 import MainEditor from '../templates/MainEditor';
 import Previewer from '../templates/Previewer';
 import Editor from '../templates/Editor';
+import Personal_info_change from '../templates/Personal_info_change';
 class Routes extends React.Component{
   render(){
     return  (
@@ -17,6 +18,7 @@ class Routes extends React.Component{
             <Router path="/Author" component={Author}/>
             <Router path="/Editor" component={Editor}/>
             <Router path="/E_Admin" component={E_Admin}/>
+            <Router path="/Personal_info_change" component={Personal_info_change}/>
     </Router>
       );
   }

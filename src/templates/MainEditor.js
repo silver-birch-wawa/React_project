@@ -31,16 +31,18 @@ function ajax_get(url,that){
 	}.bind(that))
 		.catch(function (error) {
 		    console.log(error);
+		  	alert('下载失败');
 	});
 }
 
-function ajax_post(url,data,that){
+function ajax_post(url,data){
 	axios.post(url,data)
 	  .then(function (response) {
 	    console.log(response);
 	  })
 	  .catch(function (error) {
 	    console.log(error);
+	    alert('上传失败');
 	  });
 }
 
@@ -49,6 +51,7 @@ class Header extends Component{
     	super(props);
         this.state={
         	'name':'xss',
+        	'Personal_info_change':'/#/Personal_info_change',
         	'logo_img':'http://static.samsph.com/images/logo.png',
         	'Title':'四川省人民医院编辑部'
         };
@@ -70,7 +73,7 @@ class Header extends Component{
 		       	  	<a href="#" style={{position:'relative',textAlign:'left',marginTop:'0.1rem'}}>
 			       	  	<Icon type="user" style={{color:'#337ab7',fontSize:'0.8rem'}}/>
 			       	  	<li style={{}}>
-			       	  		<name><p style={{fontSize:'0.6rem',marginTop:'0.5rem'}} onClick={this.logout}>{this.state.name}</p></name>
+			       	  		<name><p style={{fontSize:'0.6rem',marginTop:'0.5rem'}} onClick={this.logout}><a href={this.state.Personal_info_change}>{this.state.name}</a></p></name>
 			       	  	</li>
 		       	  	</a>
 		       	  </ul>
@@ -79,6 +82,7 @@ class Header extends Component{
 		)
     }
 }
+
 
 class Person extends Component{
 
