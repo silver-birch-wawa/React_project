@@ -11,6 +11,43 @@ import axios from 'axios';
 const Option = Select.Option;
 const { TextArea } = Input;
 
+class Header extends Component{
+    constructor(props){
+    	super(props);
+        this.state={
+        	'name':'xss',
+        	'Personal_info_change':'/#/Personal_info_change',
+        	'logo_img':'http://static.samsph.com/images/logo.png',
+        	'Title':'四川省人民医院编辑部'
+        };
+    }
+    logout(){
+
+    }
+    render(){
+		    return(
+		      <header className='header'>
+		        <title>主编页面</title>
+		        <logo><img src={this.state.logo_img} style={{width:'100%'}}></img></logo>
+		        <headtitle style={{fontSize:'1rem'}}>{this.state.Title}</headtitle>
+		        <nav>
+		       	  <ul>
+		       	  	<li style={{}}>
+		       	  		<p style={{fontSize:'0.7rem',marginTop:'0.5rem'}}><home><a href="/Home#/">Home</a></home></p>
+		       	  	</li>
+		       	  	<a href="#" style={{position:'relative',textAlign:'left',marginTop:'0.1rem'}}>
+			       	  	<Icon type="user" style={{color:'#337ab7',fontSize:'0.8rem'}}/>
+			       	  	<li style={{}}>
+			       	  		<name><p style={{fontSize:'0.6rem',marginTop:'0.5rem'}} onClick={this.logout}><a href={this.state.Personal_info_change}>{this.state.name}</a></p></name>
+			       	  	</li>
+		       	  	</a>
+		       	  </ul>
+		        </nav>
+		      </header>
+		)
+    }
+}
+
 class Container extends Component{
    constructor(props){
    	 super(props);
@@ -67,7 +104,7 @@ class Container extends Component{
 	}
 	render(){
 		 return(
-		 	<html style={{paddingLeft:'90px'}}>
+		 	<container>
 				<middleForm>
 				  <div class='form-section'>
 				     {this.icon['职称']}
@@ -132,8 +169,8 @@ class Container extends Component{
 				     <Button type="primary" id='Tab_submit' style={{float:'right',marginTop:'30px',marginLeft:'0px'}} onClick={this.handleClick.bind(this)}>提交</Button>
 				  </div>
 				</middleForm>
-			</html>
-		 ) 
+			</container>
+		 )
 	}
 }
 class Personal_info_change extends Component{
@@ -145,7 +182,10 @@ class Personal_info_change extends Component{
 	  	//alert('alert:\n'+this.state.data);
 	  	
 	    return (
+	        <div className='html'>
+		      <Header/>
 		      <Container/>
+		    </div>
 	    );
 	}
 }

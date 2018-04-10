@@ -6,7 +6,9 @@ import { Select } from 'antd';
 import { Tabs } from 'antd';
 import ReactDOM from 'react-dom'
 import { DatePicker } from 'antd';
+import { Input} from 'antd';
 import axios from 'axios';
+const InputGroup = Input.Group;
 const { MonthPicker, RangePicker } = DatePicker;
 const TabPane = Tabs.TabPane;
 const Option = Select.Option;
@@ -73,7 +75,7 @@ class Header extends Component{
 		       	  	<a href="#" style={{position:'relative',textAlign:'left',marginTop:'0.1rem'}}>
 			       	  	<Icon type="user" style={{color:'#337ab7',fontSize:'0.8rem'}}/>
 			       	  	<li style={{}}>
-			       	  		<name><p style={{fontSize:'0.6rem',marginTop:'0.5rem'}} onClick={this.logout}><a href={this.state.Personal_info_change}>{this.state.name}</a></p></name>
+			       	  		<name><p style={{fontSize:'0.6rem',marginTop:'0.5rem'}} onClick={this.logout}><a href={this.state.Personal_info_change} target="_blank">{this.state.name}</a></p></name>
 			       	  	</li>
 		       	  	</a>
 		       	  </ul>
@@ -200,6 +202,10 @@ class Aside extends Component{
 		           <div class="catalog" id="paper-status" onClick={this.action.bind(this,'paper-status')} ref='paper-status'>
 		                <Icon type="clock-circle-o" />&nbsp;
 		                稿件状态
+		           </div>
+		           <div class="catalog" id="Personal_info_change" onClick={this.action.bind(this,'Personal_info_change')} ref='Personal_info_change'>
+		                <Icon type="user-add" />&nbsp;
+		                个人信息
 		           </div>
 			    </Panel>			    
 			</Collapse>
@@ -441,29 +447,44 @@ class Paper_status extends Component{
 		    }
 	
 }
-class MyCalendar extends Component {
-	constructor(props){
-	   	super(props);
-	}
-    onChange(date, dateString) {
-	  let upload=[];
-	  upload=this.props.upload_data[this.props.cal-1].slice(1);
-	  upload.push(dateString);
-	  console.log(upload);
-	}
-	render() {
-	    return (
-				  <div>
-				    <DatePicker onChange={this.onChange.bind(this)} style={{width:'9rem'}}/>
-				  </div>
-	    )
-	          }
-}
 
 class Timetable extends Component{
 		constructor(props){
 	   	    super(props);
 	   	    this.state={'contents':[],'container':[],'upload_data':[]};
+	   	    this.upload_data={};
+	   	    this.has_distributed={1:3,2:8}
+	    }
+	    onChange1(value,e){
+	    	console.log(value);
+	    	// console.log(e);
+	    	let key=value['key'];
+	    	key=(key-key%1000)/1000;
+	    	let label=value['label'];
+
+	    	//alert(label);
+	    	if(this.upload_data[key]==undefined){
+	    		this.upload_data[key]={};
+	    	}
+	    	this.upload_data[key]['期刊']=label;
+	    	console.log(this.upload_data);
+	    }
+	    onChange2(value,e){
+	    	console.log(value);
+	    	// console.log(e);
+	    	let key=value['key'];
+	    	key=(key-key%1000)/1000;
+	    	let label=value['label'];
+	    	// label.replace(/[&nbsp;]*/g,'');
+	    	//alert(label);
+	    	let pat=/\d+/i
+	    	label=pat.exec(label)[0];
+
+	    	if(this.upload_data[key]==undefined){
+	    		this.upload_data[key]={};
+	    	}
+	    	this.upload_data[key]['刊数']=label;
+	    	console.log(this.upload_data);
 	    }
 		render(){
 			//alert(this.props.content);
@@ -488,9 +509,19 @@ class Timetable extends Component{
 	            		                            )
 	            		    }
 	            		    
-			                <td class="timetable-calendar">  
-			                   <MyCalendar cal={i} upload_data={this.state.upload_data}/>
+			                <td class="timetable-calendar" style={{width:'7rem'}}>  
+						        <InputGroup compact style={{display:'flex',flexDirection:'row'} }>
+							          <Select labelInValue defaultValue={{key:""}} style={{width:'4rem'}} onChange={this.onChange1.bind(this)}>
+							            <Option value={(i)*1000}>月刊</Option>
+							            <Option value={(i)*1000+1}>半月刊</Option>
+							          </Select>
+							          <Select labelInValue defaultValue={{key:""}} style={{width:'3rem'}} onChange={this.onChange2.bind(this)}>
+							            <Option value={(i)*1000}>1 &nbsp;已选{this.has_distributed[1]}</Option>
+							            <Option value={(i)*1000+1}>2 &nbsp;已选{this.has_distributed[2]}</Option>
+							          </Select>
+						        </InputGroup>
 							</td>
+
 	                	</tr>										
 	            	                          )
                             }
@@ -505,13 +536,14 @@ class Timetable extends Component{
 				                <th>作者名</th>
 				                <th>稿件名</th>
 				                <th>责任编辑</th>
-				                <th>时间</th>
+				                <th>排期</th>
 				                </tr>
 				                {
 				                	this.state.container
 				                }
 				              </table>
 				          </div>
+				          <p style={{fontSize:'20px',marginTop:'20px',marginLeft:'10px'}}>注: *后为已分配数量</p>
 				    </div>
 				)
 	        }
@@ -564,6 +596,12 @@ class Main extends Component{
 			        								</div>
 			        							</main>
 			        							);
+			        case "Personal_info_change":return(
+			        						<div class='iframe' style={{width:'80%'}}>
+			        							<iframe src='/#/Personal_info_change' style={{width:'100%',height:'100%'}}>
+			        							</iframe>
+			        						</div>
+			        	);
 			        default:return null;
 			    }
 		}

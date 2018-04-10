@@ -27,7 +27,7 @@ function ajax_get(url,that){
 	axios.get(url)
 		  .then(function (response) {
 		  	let data=response.data;
-		  	console.log(data);
+		  	//console.log(data);
 		  	that.state.data=data;
 		    that.setState({'data':data});
 	}.bind(that))
@@ -76,7 +76,7 @@ class Header extends Component{
 		       	  	<a href="#" style={{position:'relative',textAlign:'left',marginTop:'0.1rem'}}>
 			       	  	<Icon type="user" style={{color:'#337ab7',fontSize:'0.8rem'}}/>
 			       	  	<li style={{}}>
-			       	  		<name><p style={{fontSize:'0.6rem',marginTop:'0.5rem'}} onClick={this.logout}><a href={this.state.Personal_info_change}>{this.state.name}</a></p></name>
+			       	  		<name><p style={{fontSize:'0.6rem',marginTop:'0.5rem'}} onClick={this.logout}><a href={this.state.Personal_info_change} target="_blank">{this.state.name}</a></p></name>
 			       	  	</li>
 		       	  	</a>
 		       	  </ul>
@@ -198,6 +198,10 @@ class Aside extends Component{
 		                <Icon type="clock-circle" />&nbsp;
 		                稿件重审
 		           </div>
+		           <div class="catalog" id="Personal_info_change" onClick={this.action.bind(this,'Personal_info_change')} ref='Personal_info_change'>
+		                <Icon type="user-add" />&nbsp;
+		                个人信息
+		           </div>		           
 			    </Panel>			    
 			</Collapse>
 
@@ -220,29 +224,34 @@ class Re_check_paper extends Component{
            let label=value['label'];
            //alert(this.container[num-1].length)
            let signal=this.container[num-1].length;
+           //alert(signal)
            if(label=='不通过'){
            	    document.getElementById('TextArea-'+num).style.display='table-row';
-           	    if(signal==2){
-           	    	//alert('.,.,..,.,.')
+           	    if(signal==3){
+           	    	//alert('.,.,..,.,.');
+           	    	this.container[num-1].pop();
            	    	this.container[num-1].push('不通过');
            	    }
            	    // alert(this.container[num]);
            	    else{
            	    	//alert('?????');
            	    	this.container[num-1].pop();
+           	    	this.container[num-1].pop();          	    	
            	    	this.container[num-1].push('不通过');
            	    }
            }
            if(label=='通过'){
-           	    document.getElementById('TextArea-'+num).style.display='none';
-           	    if(signal==2){
+           	    document.getElementById('TextArea-'+num).style.display='table-row';
+           	    if(signal==3){
            	    	//alert('<<<<>>>>>>')
+           	    	this.container[num-1].pop();
            	    	this.container[num-1].push('通过');
            	    }
            	    // alert(this.container[num]);
            	    else{
            	    	//alert('??/////');
            	    	this.container[num-1].pop();
+           	    	this.container[num-1].pop()
            	    	this.container[num-1].push('通过');
            	    }
            }
@@ -253,11 +262,12 @@ class Re_check_paper extends Component{
 	    	//alert('提交成功');
 	    	let upload_data=[]
 			for(let l=0;l<this.container.length;l++){
-				if(this.container[l].length>2){
-					console.log(this.container[l])
+				if(this.container[l].length>3){
+					//console.log(this.container[l])
 					upload_data.push(this.container[l]);
 				}
 			}
+			console.log(upload_data)
             // this.upload_data.push();
 	    }
 	    handleShrink(value,e){
@@ -267,6 +277,7 @@ class Re_check_paper extends Component{
 	    	var text= document.getElementById('text-area'+value).value;
 	    	//alert(text);
             this.container[value-1].push(text);
+            document.getElementById('click-button').click();
 	    }
 		render(){
 			//alert(this.props.content);
@@ -304,9 +315,9 @@ class Re_check_paper extends Component{
 	                	<tr id={'TextArea-'+(i+1)} style={{display:'none'}}>
 	                	  <td colspan="3" width={{height:'0.1rem'}}>
 	                	  <Collapse bordered={false}>
-							    <Panel header="点击输入评论" key="3">
-							      	    <TextArea id={'text-area'+(i+1)} rows={4} placeholder="请输入本稿件不通过的理由"/>
-	                					<Button type="primary" style={{float:'right',marginTop:'10px',marginRight:'10px'}} onClick={this.handleShrink.bind(this,temp)}>确定</Button>
+							    <Panel header="点击输入评论(必填)" key="3">
+							      	    <TextArea id={'text-area'+(i+1)} rows={4} placeholder="请输入本稿件不通过的理由(必填)"/>
+	                					<Button type="primary" style={{float:'right',marginTop:'10px',marginRight:'10px'}} onClick={this.handleShrink.bind(this,temp)}>提交</Button>
 							    </Panel>
 							</Collapse>
 	                	  </td>
@@ -330,7 +341,7 @@ class Re_check_paper extends Component{
 				                	this.state.container
 				                }
 				              </table>
-				              <Button type="primary" style={{float:'right',marginTop:'10px',marginRight:'10px'}} onClick={this.handleClick.bind(this)}>提交</Button>
+				              <Button type="primary" id='click-button' style={{float:'right',marginTop:'10px',marginRight:'10px'}} onClick={this.handleClick.bind(this)}>提交</Button>
 				          </div>
 				    </div>
 				)
@@ -351,29 +362,34 @@ class Check_paper extends Component{
            let label=value['label'];
            //alert(this.container[num-1].length)
            let signal=this.container[num-1].length;
+           //alert(signal)
            if(label=='不通过'){
            	    document.getElementById('TextArea-'+num).style.display='table-row';
            	    if(signal==3){
-           	    	//alert('.,.,..,.,.')
+           	    	//alert('.,.,..,.,.');
+           	    	this.container[num-1].pop();
            	    	this.container[num-1].push('不通过');
            	    }
            	    // alert(this.container[num]);
            	    else{
            	    	//alert('?????');
            	    	this.container[num-1].pop();
+           	    	this.container[num-1].pop();          	    	
            	    	this.container[num-1].push('不通过');
            	    }
            }
            if(label=='通过'){
-           	    document.getElementById('TextArea-'+num).style.display='none';
+           	    document.getElementById('TextArea-'+num).style.display='table-row';
            	    if(signal==3){
            	    	//alert('<<<<>>>>>>')
+           	    	this.container[num-1].pop();
            	    	this.container[num-1].push('通过');
            	    }
            	    // alert(this.container[num]);
            	    else{
            	    	//alert('??/////');
            	    	this.container[num-1].pop();
+           	    	this.container[num-1].pop()
            	    	this.container[num-1].push('通过');
            	    }
            }
@@ -385,19 +401,22 @@ class Check_paper extends Component{
 	    	let upload_data=[]
 			for(let l=0;l<this.container.length;l++){
 				if(this.container[l].length>3){
-					console.log(this.container[l])
+					//console.log(this.container[l])
 					upload_data.push(this.container[l]);
 				}
 			}
+			console.log(upload_data);
             // this.upload_data.push();
 	    }
 	    handleShrink(value,e){
+
 	    	//console.log(value);  // 123
 	    	document.getElementsByClassName('ant-collapse-header')[value].click();
 	    	// document.getElementById('TextArea-'+value).style.display='none';
 	    	var text= document.getElementById('text-area'+value).value;
 	    	//alert(text);
             this.container[value-1].push(text);
+            document.getElementById('click-button').click()
 	    }
 		render(){
 			//alert(this.props.content);
@@ -434,9 +453,9 @@ class Check_paper extends Component{
 	                	<tr id={'TextArea-'+(i+1)} style={{display:'none'}}>
 	                	  <td colspan="3" width={{height:'0.1rem'}}>
 	                	  <Collapse bordered={false}>
-							    <Panel header="点击输入评论" key="3">
-							      	    <TextArea id={'text-area'+(i+1)} rows={4} placeholder="请输入本稿件不通过的理由"/>
-	                					<Button type="primary" style={{float:'right',marginTop:'10px',marginRight:'10px'}} onClick={this.handleShrink.bind(this,temp)}>确定</Button>
+							    <Panel header="点击输入修改意见(必填)" key="3">
+							      	    <TextArea id={'text-area'+(i+1)} rows={4} placeholder="请输入本稿件不通过的理由(必填)"/>
+	                					<Button type="primary" style={{float:'right',marginTop:'10px',marginRight:'10px'}} onClick={this.handleShrink.bind(this,temp)}>提交</Button>
 							    </Panel>
 							</Collapse>
 	                	  </td>
@@ -460,7 +479,7 @@ class Check_paper extends Component{
 				                	this.state.container
 				                }
 				              </table>
-				              <Button type="primary" style={{float:'right',marginTop:'10px',marginRight:'10px'}} onClick={this.handleClick.bind(this)}>提交</Button>
+				              <Button type="primary" id='click-button' style={{float:'right',marginTop:'10px',marginRight:'10px'}} onClick={this.handleClick.bind(this)}>提交</Button>
 				          </div>
 				    </div>
 				)
@@ -499,6 +518,12 @@ class Main extends Component{
 			        								</div>
 			        							</main>
 			        							);
+			        case "Personal_info_change":return(
+			        						<div class='iframe' style={{width:'80%'}}>
+			        							<iframe src='/#/Personal_info_change' style={{width:'100%',height:'100%'}}>
+			        							</iframe>
+			        						</div>
+			        	)
 			        default:return null;
 			    }
 		}
@@ -515,7 +540,6 @@ class Previewer extends Component {
 
 	render() {
 	  	//alert('alert:\n'+this.state.data);
-	  	
 	    return (
 	        <html className='html'>
 		      <Header/>
