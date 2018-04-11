@@ -321,7 +321,7 @@ class HasNotDistributed extends Component{
 			    	this.state.container_unfinished.push(
 		            <tr>
              		   { 
-             		   	contents[index].map((item,i)=>{if(i==0){return(<td key={i} style={{width:'2rem'}}>{contents[index][i]}</td>)}if(1<i){return(<td key={i}>{contents[index][i]}</td>)}})
+             		   	contents[index].map((item,i)=>{if(i==1){return(<td key={i} style={{width:'2rem'}}>{contents[index][i]}</td>)}if(1<i){return(<td key={i}>{contents[index][i]}</td>)}})
              		   }
 		                <td class='td-select'>
 		                  <Select id={{index}} onChange={this.handleChange.bind(this)} labelInValue defaultValue={{key:this.state.none}}>
@@ -352,7 +352,9 @@ class HasNotDistributed extends Component{
        	  this.setState({'container_unfinished':this.state.container_unfinished,'none':'none'})
        }
        //console.log(this.props.contents)
-       console.log(this.upload_data);
+       if(JSON.stringify(this.upload_data)!='{}'){
+       		console.log(this.upload_data);   //稿件分配上传点
+       }
       // window.location.reload();
       //alert('已提交');
       this.change_the_other_component();
@@ -453,7 +455,8 @@ class Timetable extends Component{
 	   	    super(props);
 	   	    this.state={'contents':[],'container':[],'upload_data':[]};
 	   	    this.upload_data={};
-	   	    this.has_distributed={1:3,2:8}
+	   	    this.get_data=4;
+	   	    this.has_distributed={1:3,2:8,3:19,4:9}
 	    }
 	    onChange1(value,e){
 	    	console.log(value);
@@ -466,8 +469,12 @@ class Timetable extends Component{
 	    	if(this.upload_data[key]==undefined){
 	    		this.upload_data[key]={};
 	    	}
+	    	console.log(key);
 	    	this.upload_data[key]['期刊']=label;
+	    	this.upload_data[key]['姓名']=this.state.upload_data[key][1];
+	    	this.upload_data[key]['稿件名']=this.state.upload_data[key][2];
 	    	console.log(this.upload_data);
+	    	//console.log(this.state.upload_data);
 	    }
 	    onChange2(value,e){
 	    	console.log(value);
@@ -484,7 +491,11 @@ class Timetable extends Component{
 	    		this.upload_data[key]={};
 	    	}
 	    	this.upload_data[key]['刊数']=label;
+	    	this.upload_data[key]['姓名']=this.state.upload_data[key][1];
+	    	this.upload_data[key]['稿件名']=this.state.upload_data[key][2];
+
 	    	console.log(this.upload_data);
+	    	//console.log(this.state.upload_data);
 	    }
 		render(){
 			//alert(this.props.content);
@@ -512,12 +523,12 @@ class Timetable extends Component{
 			                <td class="timetable-calendar" style={{width:'7rem'}}>  
 						        <InputGroup compact style={{display:'flex',flexDirection:'row'} }>
 							          <Select labelInValue defaultValue={{key:""}} style={{width:'4rem'}} onChange={this.onChange1.bind(this)}>
-							            <Option value={(i)*1000}>月刊</Option>
-							            <Option value={(i)*1000+1}>半月刊</Option>
+							            <Option value={(i-1)*1000}>月刊</Option>
+							            <Option value={(i-1)*1000+1}>半月刊</Option>
 							          </Select>
 							          <Select labelInValue defaultValue={{key:""}} style={{width:'3rem'}} onChange={this.onChange2.bind(this)}>
-							            <Option value={(i)*1000}>1 &nbsp;已选{this.has_distributed[1]}</Option>
-							            <Option value={(i)*1000+1}>2 &nbsp;已选{this.has_distributed[2]}</Option>
+							            <Option value={(i-1)*1000}>1 &nbsp;已选{this.has_distributed[1]}</Option>
+							            <Option value={(i-1)*1000+1}>2 &nbsp;已选{this.has_distributed[2]}</Option>
 							          </Select>
 						        </InputGroup>
 							</td>
