@@ -11,15 +11,29 @@ import axios from 'axios';
 const Option = Select.Option;
 const { TextArea } = Input;
 
+function isEmptyObject(obj){
+    for (var n in obj) {
+        return false
+    }
+    return true; 
+} 
+
 class Container extends Component{
    constructor(props){
    	 super(props);
    	 this.state={
-   	 	'role':'author',
-   	 	'author':['收寄地址','办公室电话','所在地邮编','所在地中文名','所在地英文名','研究方向'],
-   	     };   	 	
+   	 	'role':'作者',
+   	 	'作者':['收寄地址','办公室电话','所在地邮编','所在地中文名','所在地英文名','研究方向'],
+   	 	'主编':[],
+   	 	'审稿人':[],
+   	 	'读者':[],
+   	 	'编辑':[]
+   	     };   	 
+   	 this.Personal_info={};
+   	 this.Personal_info={'姓名':'qqqq','个人介绍':'jlqjlqdjlldjlj','性别':'女','密码':'198108310283101','联系方式':'189192121','办公室电话':'1979829382','研究方向':['内科','妇科'],'收寄地址':'成都','所在地邮编':'32323232','所在地中文名':'是继续开始进行筛选','所在地英文名':'kewhukwncwncdwc'};	
    	 this.upload={};
    	 this.icon={}
+   	 this.icon['密码']=<img class='img-icon' src={require('../img/passwd.png')}/>
    	 this.icon['联系方式']=<img class='img-icon' src={require('../img/mobilephone_fill.png')}/>
    	 this.icon['办公室电话']=<img class='img-icon' src={require('../img/phone.png')}/>
    	 this.icon['收寄地址']=<img class='img-icon' src={require('../img/mail_fill.png')}/>
@@ -62,7 +76,17 @@ class Container extends Component{
 //		console.log(value);
 	}
 	handleClick(e){
-		alert(this.upload);
+		console.log(this.upload);
+		if(isEmptyObject(this.upload)){
+			alert('表单为空！');
+			return ;
+		}
+		let pat=/\d+/i;
+    	let label=pat.exec(this.upload['联系方式']);
+    	if(label==null||label[0]!=e.target.value){
+    		alert('请输入正确的电话号码');
+    		return;
+    	}
 		window.location.reload();
 	}
 	render(){
@@ -71,12 +95,12 @@ class Container extends Component{
 				<middleForm>
 				  <div class='form-section'>
 				     {this.icon['职称']}
-				    <p>职称：&nbsp;{this.state.role}</p>
+				    <p>角色：&nbsp;{this.state.role}</p>
 				  </div>
 				  <div class='form-section' style={{border:'1px bold black'}}>
 				    {this.icon['性别']}
 				    <p>性别：&nbsp;</p>
-				    <Select defaultValue="" onChange={this.handlechange.bind(this,{'item':'性别'})} labelInValue defaultValue={{key:this.subjects[0]}} style={{width:60}}>
+				    <Select onChange={this.handlechange.bind(this,{'item':'性别'})} labelInValue defaultValue={{key:this.Personal_info['性别']}} style={{width:'2rem'}}>
 				      <Option value="male">男</Option>
 				      <Option value="female">女</Option>
 				    </Select>
@@ -84,12 +108,17 @@ class Container extends Component{
 				  <div class='form-section'>
 				    {this.icon['姓名']}
 				    <p>姓名：&nbsp;</p>
-					<Input placeholder="必填" style={{width:'30%'}} onChange={this.handlechange.bind(this,{'item':'姓名'})}/>
+					<Input style={{width:'30%'}} placeholder={this.Personal_info['姓名']} onChange={this.handlechange.bind(this,{'item':'姓名'})}/>
 				  </div>			  
+				  <div class='form-section'>
+				    {this.icon['密码']}
+				    <p>密码：&nbsp;</p>
+					<Input style={{width:'30%'}} placeholder={this.Personal_info['密码']} onChange={this.handlechange.bind(this,{'item':'密码'})}/>
+				  </div>
 				  <div class='form-section'>
 				    {this.icon['联系方式']}
 				    <p>联系方式：&nbsp;</p>
-					<Input placeholder="必填" style={{width:'60%'}} onChange={this.handlechange.bind(this,{'item':'联系方式'})}/>
+					<Input style={{width:'60%'}} placeholder={this.Personal_info['联系方式']} onChange={this.handlechange.bind(this,{'item':'联系方式'})}/>
 				  </div>
 
 				  {
@@ -98,11 +127,12 @@ class Container extends Component{
 													  <div class='form-section'>
 													    {this.icon[item]}
 													    <p>{item}：&nbsp;</p>
-														<Input placeholder="必填" style={{width:'60%'}} onChange={this.handlechange.bind(this,{item})}/>
+														<Input style={{width:'60%'}} placeholder={this.Personal_info[item]} onChange={this.handlechange.bind(this,{item})}/>
 													  </div>
 				  								)
 				  						}
-				  	else{return(
+				  	else{
+				  		return(
 								  <div class='form-section'>
 								    {this.icon[item]}
 								    <p>研究方向：&nbsp;</p>
@@ -110,7 +140,7 @@ class Container extends Component{
 									    mode="multiple"
 									    style={{ width: '60%' }}
 									    placeholder="必填"
-									    defaultValue={{key:this.subjects[0]}}
+									    placeholder={this.Personal_info['研究方向'].toString()}
 									    labelInValue
 									    onChange={this.handlechange.bind(this,{item})}
 									  >
@@ -126,7 +156,7 @@ class Container extends Component{
 				  <div class='form-section'>
 				    {this.icon['个人介绍']}
 				    <p>个人介绍：&nbsp;</p>
-					<TextArea style={{width:'70%'}} rows={4} placeholder="个人介绍" onChange={this.handlechange.bind(this,{'item':'个人介绍'})}/>
+					<TextArea style={{width:'60%'}} rows={4} placeholder={this.Personal_info['个人介绍']} onChange={this.handlechange.bind(this,{'item':'个人介绍'})}/>
 				  </div>				    
 				  <div class='form-section'>
 				     <Button type="primary" id='Tab_submit' style={{float:'right',marginTop:'30px',marginLeft:'0px'}} onClick={this.handleClick.bind(this)}>提交</Button>

@@ -8,6 +8,7 @@ import ReactDOM from 'react-dom'
 import { DatePicker } from 'antd';
 import { Input} from 'antd';
 import axios from 'axios';
+import { Badge } from 'antd';
 const InputGroup = Input.Group;
 const { MonthPicker, RangePicker } = DatePicker;
 const TabPane = Tabs.TabPane;
@@ -453,61 +454,87 @@ class Paper_status extends Component{
 class Timetable extends Component{
 		constructor(props){
 	   	    super(props);
-	   	    this.state={'contents':[],'container':[],'upload_data':[]};
+	   	    // 编号从1--n
+	   	    // download_data 已安排稿件对应刊数，has_distributed 各刊数对应已分配稿件数量
+	   	    // 表格从1开始,下拉菜单从0开始
+	   	    this.state={'contents':[],'container':[],'upload_data':[],has_distributed:{1:3,2:5,3:7,4:91},changed:false,'download_data':{1:2}};
 	   	    this.upload_data={};
-	   	    this.get_data=4;
-	   	    this.has_distributed={1:3,2:8,3:19,4:9}
-	    }
-	    onChange1(value,e){
-	    	console.log(value);
-	    	// console.log(e);
-	    	let key=value['key'];
-	    	key=(key-key%1000)/1000;
-	    	let label=value['label'];
+	   	    this.get_data=4;  // 刊数
+	   	    this.has_distributed={1:3,2:5,3:7,4:9};
+	   	    this.has_distributed_length=0;
+	   	    for(let i in this.has_distributed){this.has_distributed_length=i;}
 
-	    	//alert(label);
-	    	if(this.upload_data[key]==undefined){
-	    		this.upload_data[key]={};
-	    	}
-	    	console.log(key);
-	    	this.upload_data[key]['期刊']=label;
-	    	this.upload_data[key]['姓名']=this.state.upload_data[key][1];
-	    	this.upload_data[key]['稿件名']=this.state.upload_data[key][2];
-	    	console.log(this.upload_data);
-	    	//console.log(this.state.upload_data);
+	   	    this.changed=false;
+	   	    //this.state.has_distributed=this.has_distributed;
+	   	    // this.state.has_distributed={1:3,2:8,3:19,4:9};
+	    }
+	    get_download_data(){
+	    	let data={}
+		    this.state.contents[1].map((items,i)=>{ 
+        	if(items[0]==7){
+        		data[i+1]=1;
+        		    	}
+        		}
+        	)
+	    	this.state.download_data;
 	    }
 	    onChange2(value,e){
-	    	console.log(value);
-	    	// console.log(e);
+	    	// console.log(value);
+	    	//console.log('pre:  '+e.target);
 	    	let key=value['key'];
 	    	key=(key-key%1000)/1000;
 	    	let label=value['label'];
 	    	// label.replace(/[&nbsp;]*/g,'');
-	    	//alert(label);
-	    	let pat=/\d+/i
+	    	// alert(key);
+	    	let pat=/\d+/i;
+	    	let pre=0;
 	    	label=pat.exec(label)[0];
+	    	// console.log(label);
 
 	    	if(this.upload_data[key]==undefined){
 	    		this.upload_data[key]={};
 	    	}
+	    	// if(this.upload_data[key]['pre']==undefined){
+	    	// 	this.upload_data[key]['pre']=label;
+	    	// 	//this.state.has_distributed['pre']-=1;
+	    	// }
+	    	// else{
+	    	// 	pre=this.upload_data[key]['pre'];
+	    	// 	// this.has_distributed[pre]-=1;
+	    	// 	// this.upload_data[key]['pre']=label;
+	    	// }
 	    	this.upload_data[key]['刊数']=label;
 	    	this.upload_data[key]['姓名']=this.state.upload_data[key][1];
 	    	this.upload_data[key]['稿件名']=this.state.upload_data[key][2];
 
+	    	// alert(this.has_distributed[label]);
+	    	// this.has_distributed[label]=this.has_distributed[label]+1;
+	    	// //this.setState(this.state);
+	    	// console.log(this.has_distributed);
+	    	// alert(this.has_distributed[label]);
+
+	    	// this.setState({has_distributed:this.has_distributed});
+	    	//this.setState(this.state.upload_data);
 	    	console.log(this.upload_data);
 	    	//console.log(this.state.upload_data);
+	    	// this.setState({changed:this.changed});
 	    }
 		render(){
+			let that=this;
+			//alert('changed');
+			//console.log(this.state.has_distributed);
 			//alert(this.props.content);
 			if(this.props.content!=undefined){
 				this.state.contents=this.props.content;
+				this.get_download_data();
 				//alert(this.state.contents);
 		        {
 		        this.state.contents[1].map((items,i)=>{ 
         		if(items[0]==7){
         			//alert(items);
         			this.state.upload_data.push(items);
-        			//alert(this.state.upload_data);
+        			//console.log(this.state.upload_data);
+        			
 	        		this.state.container.push(
 	        			<tr key={i}>
 	            			{
@@ -520,17 +547,20 @@ class Timetable extends Component{
 	            		                            )
 	            		    }
 	            		    
-			                <td class="timetable-calendar" style={{width:'7rem'}}>  
-						        <InputGroup compact style={{display:'flex',flexDirection:'row'} }>
-							          <Select labelInValue defaultValue={{key:""}} style={{width:'4rem'}} onChange={this.onChange1.bind(this)}>
-							            <Option value={(i-1)*1000}>月刊</Option>
-							            <Option value={(i-1)*1000+1}>半月刊</Option>
-							          </Select>
-							          <Select labelInValue defaultValue={{key:""}} style={{width:'3rem'}} onChange={this.onChange2.bind(this)}>
-							            <Option value={(i-1)*1000}>1 &nbsp;已选{this.has_distributed[1]}</Option>
-							            <Option value={(i-1)*1000+1}>2 &nbsp;已选{this.has_distributed[2]}</Option>
-							          </Select>
-						        </InputGroup>
+			                <td class="timetable-calendar" style={{width:'3rem'}}>  
+			                	<Select labelInValue defaultValue={{key:this.state.download_data[i]?this.state.download_data[i]:""}} style={{width:'3rem'}} onChange={this.onChange2.bind(this)}>		
+									{
+										(function (that,i) {
+											let k=-1;
+											let myOption=[];
+											while(k++<that.has_distributed_length-1) {
+												myOption.push(<Option value={(i-1)*1000+k} key={k+100}>{k+1}&nbsp;<Badge style={{marginBottom:'4px'}}count={that.state.has_distributed[k+1]}/></Option>)
+											//console.log(myOption);
+											}
+											return myOption;
+									    })(that,i)
+								    }
+							    </Select>
 							</td>
 
 	                	</tr>										
@@ -554,7 +584,7 @@ class Timetable extends Component{
 				                }
 				              </table>
 				          </div>
-				          <p style={{fontSize:'20px',marginTop:'20px',marginLeft:'10px'}}>注: *后为已分配数量</p>
+				          <p style={{fontSize:'20px',marginTop:'20px',marginLeft:'10px'}}>注: 标红数字为已分配稿件数量</p>
 				    </div>
 				)
 	        }
@@ -588,8 +618,7 @@ class Main extends Component{
 									  <Tabs defaultActiveKey="1">
 									      <TabPane tab="未分配" key="1"><HasNotDistributed content={this.state.contents} change_the_other_component={this.change_the_other_component.bind(this)}/></TabPane>
 									      <TabPane tab="已分配" key="2"><HasDistributed content={this.state.contents} key={Math.random()}/></TabPane>
-									  </Tabs>
-									  
+									  </Tabs>									  
 								    </div>
 							  </main>
 			            );
@@ -597,6 +626,7 @@ class Main extends Component{
 			        						<main>
 			        							<div class='white-back'>
 			        								<Timetable content={this.props.content}/>
+
 			        							</div>
 			        						</main>
 			        						);
