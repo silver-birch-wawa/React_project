@@ -451,7 +451,7 @@ class Paper_status extends Component{
 	
 }
 
-class Timetable extends Component{
+class HasNotDate extends Component{
 		constructor(props){
 	   	    super(props);
 	   	    // 编号从1--n
@@ -589,6 +589,139 @@ class Timetable extends Component{
 				)
 	        }
 }
+class HasDate extends Component{
+		constructor(props){
+	   	    super(props);
+	   	    // 编号从1--n
+	   	    // download_data 已安排稿件对应刊数，has_distributed 各刊数对应已分配稿件数量
+	   	    // 表格从1开始,下拉菜单从0开始
+	   	    this.state={'contents':[],'container':[],'upload_data':[],has_dated:{},has_distributed:{},changed:false,'download_data':{}};
+	   	    this.upload_data={};
+	   	    this.get_data=4;  // 刊数  需要请求后端
+	   	    for(let l=1;l<this.get_data;l++){
+	   	    	this.state.has_distributed[l]=0;
+	   	    }
+//	   	    this.has_distributed={1:3,2:5,3:7,4:9};
+//			this.has_distributed={};
+	   	    this.has_distributed_length=0;
+	   	    
+	   	    this.changed=false;
+	   	    //this.state.has_distributed=this.has_distributed;
+	   	    // this.state.has_distributed={1:3,2:8,3:19,4:9};
+	    }
+
+	    onChange2(value,e){
+	    	// console.log(value);
+	    	//console.log('pre:  '+e.target);
+	    	let key=value['key'];
+	    	key=(key-key%1000)/1000;
+	    	let label=value['label'];
+	    	// label.replace(/[&nbsp;]*/g,'');
+	    	alert(key);
+	    	let pat=/\d+/i;
+	    	let pre=0;
+	    	label=pat.exec(label)[0];
+	    	// console.log(label);
+
+	    	if(this.upload_data[key]==undefined){
+	    		this.upload_data[key]={};
+	    	}
+	    	console.log(this.state.has_dated);
+	    	this.upload_data[key]['刊数']=label;
+	    	this.upload_data[key]['姓名']=this.state.has_dated[key+1]['data'][0];
+	    	this.upload_data[key]['稿件名']=this.state.has_dated[key+1]['data'][1];
+
+	    	console.log(this.upload_data);
+	    }
+		render(){
+			let that=this;
+			//alert('changed');
+			//console.log(this.state.has_distributed);
+			//alert(this.props.content);
+			if(this.props.content!=undefined){
+				this.state.contents=this.props.content;
+				this.state.has_dated=this.props.has_dated;
+				//for(let i in this.state.has_dated){this.has_distributed_length=i;}
+
+				// 统计各刊已选稿件数，
+				for(let l in this.state.has_dated){
+					console.log(this.state.has_dated[l]);
+					//this.download_data[l]={};
+					this.state.download_data[l]=this.state.has_dated[l]['state'];
+					this.state.has_distributed[this.state.has_dated[l]['state']]+=1;
+					//this.state.upload_data;
+					/*
+					{
+						data:["Alex", "PSIDPSIDPSIDSIDSODIS", "Alex`s editor"]
+						state:2
+					}
+					*/
+				}
+				//alert(this.state.contents);
+		        
+		        for(let i in this.props.has_dated){
+			        let items=this.props.has_dated[i]; 
+	        		if(items['state']!=false){
+	        			//alert(items);
+	        			this.state.upload_data.push(items);
+	        			//console.log(this.state.upload_data);
+	        			
+		        		this.state.container.push(
+		        			<tr key={i}>
+		            			{
+		            				items['data'].map((item,j)=>{
+		            				//if(j>0){
+			            				return(<td key={j}>{item}</td>)		    
+			            		          //}
+			            		                                }
+			            		              
+		            		                            )
+		            		    }
+		            		    
+				                <td class="timetable-calendar" style={{width:'3rem'}}>  
+				                	<Select labelInValue defaultValue={{key:this.state.download_data[i]?this.state.download_data[i]:""}} style={{width:'3rem'}} onChange={this.onChange2.bind(this)}>		
+										{
+											(function (that,i) {
+												let k=-1;
+												let myOption=[];
+												while(k++<that.get_data-1) {
+
+													myOption.push(<Option value={(i-1)*1000+k} key={k+100}>{k+1}&nbsp;<Badge style={{marginBottom:'4px'}}count={that.state.has_distributed[k+1]}/></Option>)
+												//console.log(myOption);
+												}
+												return myOption;
+										    })(that,i)
+									    }
+								    </Select>
+								</td>
+
+		                	</tr>										
+		            	                          )
+	                                        }
+	                    }
+        	                                                
+        	    }
+			                                 
+			return(
+				    <div class='white-back'>
+				          <div id='display-box'>
+				              <table id="customers">
+				                <tr>
+				                <th>作者名</th>
+				                <th>稿件名</th>
+				                <th>责任编辑</th>
+				                <th>排期</th>
+				                </tr>
+				                {
+				                	this.state.container
+				                }
+				              </table>
+				          </div>
+				          <p style={{fontSize:'20px',marginTop:'20px',marginLeft:'10px'}}>注: 标红数字为已分配稿件数量</p>
+				    </div>
+				)
+	        }
+}
 class Main extends Component{
    static defaultProps = {
       content:["":[['','','','']]]
@@ -599,8 +732,34 @@ class Main extends Component{
    	 this.status_code={1:'未分配',2:'审阅中',3:'未通过',4:'待修改',5:'通过',6:'格式确认',7:'已缴费'};
    	 this.td_width=['3rem','3rem','9rem','3rem'];
    	 this.title=['状态','作者名','稿件名','负责编辑'];
-   	 this.state={'contents':[],'changed':true};
+   	 this.state={'contents':[],'changed':true,'has_dated':{}};
+   	 // has_dated 记录所有数据及状态
    }
+   get_dated(){
+   	    let k=1;
+	    this.state.contents[1].map((items,i)=>{ 
+    	if(items[0]==7){
+    		this.state.has_dated[k]={}
+    		this.state.has_dated[k]['data']=items.slice(1);
+    		this.state.has_dated[k]['state']=parseInt(4*Math.random()+1);   // 如果未分配则为false
+    		//this.state.has_dated[k]['state']=2;   // 如果未分配则为false
+    		k+=1;
+    		//this.state.has_dated[i+1].unshift(i);
+    		    	}
+    		             
+    		    							})
+//	    this.state.has_dated[k-1]['state']=4;
+
+	    //在此处获取相应的已分配数量
+	    //this.
+    	console.log(this.state.has_dated);  
+    	/*
+    	{
+    	  1:["Jack", "PHPPHPPHPPHPPHPPHPPHPPHPPHPPHP", "Jack`s editor"]
+		  2:["Alex", "PSIDPSIDPSIDSIDSODIS", "Alex`s editor"]  
+		}
+        */
+    }
    change_the_other_component(){
       // this.state.change=!this.state.changed;
       //alert(this.state.contents);
@@ -611,6 +770,7 @@ class Main extends Component{
    	    this.state.contents=this.props.content;
    	    if(this.state.contents[0]!=undefined){
    	    	//alert(this.props.content)
+   	    	this.get_dated();
 		   	switch(this.props.content[0]){
 			        case "distributePaper":return (
 							  <main>
@@ -625,8 +785,10 @@ class Main extends Component{
 			        case "timetable":return(
 			        						<main>
 			        							<div class='white-back'>
-			        								<Timetable content={this.props.content}/>
-
+			        								<Tabs defaultActiveKey="1">
+												      <TabPane tab="未排期" key="1"><HasNotDate content={this.state.contents} has_dated={this.state.has_dated} change_the_other_component={this.change_the_other_component.bind(this)}/></TabPane>
+												      <TabPane tab="已排期" key="2"><HasDate content={this.state.contents} has_dated={this.state.has_dated} key={Math.random()}/></TabPane>
+												    </Tabs>
 			        							</div>
 			        						</main>
 			        						);
