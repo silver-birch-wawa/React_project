@@ -296,7 +296,7 @@ class Re_check_paper extends Component{
 
 	            				items.map((item,j)=>{
 		            				if(j<1){return(<td key={j}>{item}</td>)}
-		            				if(j==1){return(<td key={j}><a href={this.container[i][2]} target="_blank">{item}&nbsp;<Icon type="cloud-download" /></a></td>)}
+		            				if(j==1){return(<td key={j}><a href={this.container[i][2]} target="_blank">{item}</a></td>)}
 		            		                        }
 		            		              
 	            		                )
@@ -434,7 +434,7 @@ class Check_paper extends Component{
 	            			{
 	            				items.map((item,j)=>{
 		            				if(j<1){return(<td key={j}>{item}</td>)}	
-		            				if(j==1){return(<td key={j}><a href={this.container[i][2]} target="_blank">{item}&nbsp;<Icon type="cloud-download" /></a></td>)}		    
+		            				if(j==1){return(<td key={j}><a href={this.container[i][2]} target="_blank">{item}</a></td>)}		    
 		            		                        }
 		            		              
 	            		                )
