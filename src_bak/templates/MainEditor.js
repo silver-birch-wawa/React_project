@@ -457,35 +457,39 @@ class HasNotDate extends Component{
 	   	    // 编号从1--n
 	   	    // download_data 已安排稿件对应刊数，has_distributed 各刊数对应已分配稿件数量
 	   	    // 表格从1开始,下拉菜单从0开始
-	   	    this.state={'contents':[],'container':[],'upload_data':[],has_distributed:{1:3,2:5,3:7,4:91},changed:false,'download_data':{1:2}};
+	   	    // 
+	   	    this.state={'contents':[],'container':[],'upload_data':[],has_dated:{},has_distributed:{},changed:false,'download_data':{}};
 	   	    this.upload_data={};
-	   	    this.get_data=4;  // 刊数
-	   	    this.has_distributed={1:3,2:5,3:7,4:9};
+	   	    this.get_data=4;  // 刊数  需要请求后端
+	   	    for(let l=1;l<this.get_data+1;l++){
+	   	    	this.state.has_distributed[l]=0;
+	   	    }
+//	   	    this.has_distributed={1:3,2:5,3:7,4:9};
+//			this.has_distributed={};
 	   	    this.has_distributed_length=0;
-	   	    for(let i in this.has_distributed){this.has_distributed_length=i;}
-
+	   	    
+	   	    this.has_dated={};
+	   	    
 	   	    this.changed=false;
 	   	    //this.state.has_distributed=this.has_distributed;
 	   	    // this.state.has_distributed={1:3,2:8,3:19,4:9};
 	    }
-	    get_download_data(){
-	    	let data={}
-		    this.state.contents[1].map((items,i)=>{ 
-        	if(items[0]==7){
-        		data[i+1]=1;
-        		    	}
-        		}
-        	)
-	    	this.state.download_data;
-	    }
+
 	    onChange2(value,e){
+	    	//this.state.has_dated=this.props.has_dated;
+	    	//this.has_dated = JSON.parse(JSON.stringify(this.state.has_dated));
+	    	for(let l in this.props.has_dated){
+	    		//alert('9829u28uchewouhew')
+	    		this.has_dated[l]={}
+	    		this.has_dated[l]['state']=this.props.has_dated[l]['state'].toString();
+	    	}
 	    	// console.log(value);
 	    	//console.log('pre:  '+e.target);
 	    	let key=value['key'];
 	    	key=(key-key%1000)/1000;
-	    	let label=value['label'];
+	    	let label=value['label']; 
 	    	// label.replace(/[&nbsp;]*/g,'');
-	    	// alert(key);
+	    	//alert(key);
 	    	let pat=/\d+/i;
 	    	let pre=0;
 	    	label=pat.exec(label)[0];
@@ -494,81 +498,99 @@ class HasNotDate extends Component{
 	    	if(this.upload_data[key]==undefined){
 	    		this.upload_data[key]={};
 	    	}
-	    	// if(this.upload_data[key]['pre']==undefined){
-	    	// 	this.upload_data[key]['pre']=label;
-	    	// 	//this.state.has_distributed['pre']-=1;
-	    	// }
-	    	// else{
-	    	// 	pre=this.upload_data[key]['pre'];
-	    	// 	// this.has_distributed[pre]-=1;
-	    	// 	// this.upload_data[key]['pre']=label;
-	    	// }
+	    	//alert(key)
+	    	console.log(this.has_dated);
 	    	this.upload_data[key]['刊数']=label;
-	    	this.upload_data[key]['姓名']=this.state.upload_data[key][1];
-	    	this.upload_data[key]['稿件名']=this.state.upload_data[key][2];
-
-	    	// alert(this.has_distributed[label]);
-	    	// this.has_distributed[label]=this.has_distributed[label]+1;
-	    	// //this.setState(this.state);
-	    	// console.log(this.has_distributed);
-	    	// alert(this.has_distributed[label]);
-
-	    	// this.setState({has_distributed:this.has_distributed});
-	    	//this.setState(this.state.upload_data);
+	    	this.upload_data[key]['姓名']=this.props.has_dated[key+1]['data'][0];
+	    	this.upload_data[key]['稿件名']=this.props.has_dated[key+1]['data'][1];
+	    	if(this.props.has_dated[key+1]['state']==false){
+	    		this.props.has_dated[key+1]['state']==1;
+	    		
+	    		//alert(this.has_dated[key+1]['state']);
+	    		this.has_dated[key+1]['state']==label;
+	    		//this.setState({'has_dated':this.state.has_dated})
+	    		//alert('ckjdsnclkds');
+	    		//alert(this.has_dated[key+1]['state']);
+	    		
+	    		console.log(this.has_dated);
+	    		this.props.change_the_other_date_component(key+1,label);
+	    	}
+	    	//this.setState({'has_dated':this.state.has_dated});
+	    	//this.setState({'has_dated':this.props.has_dated});
 	    	console.log(this.upload_data);
-	    	//console.log(this.state.upload_data);
-	    	// this.setState({changed:this.changed});
+	    	
 	    }
-		render(){
+ 		render(){
 			let that=this;
 			//alert('changed');
 			//console.log(this.state.has_distributed);
 			//alert(this.props.content);
 			if(this.props.content!=undefined){
 				this.state.contents=this.props.content;
-				this.get_download_data();
-				//alert(this.state.contents);
-		        {
-		        this.state.contents[1].map((items,i)=>{ 
-        		if(items[0]==7){
-        			//alert(items);
-        			this.state.upload_data.push(items);
-        			//console.log(this.state.upload_data);
-        			
-	        		this.state.container.push(
-	        			<tr key={i}>
-	            			{
-	            				items.map((item,j)=>{
-	            				if(j>0){
-		            				return(<td key={j}>{item}</td>)		    
-		            		           }
-		            		                        }
-		            		              
-	            		                            )
-	            		    }
-	            		    
-			                <td class="timetable-calendar" style={{width:'3rem'}}>  
-			                	<Select labelInValue defaultValue={{key:this.state.download_data[i]?this.state.download_data[i]:""}} style={{width:'3rem'}} onChange={this.onChange2.bind(this)}>		
-									{
-										(function (that,i) {
-											let k=-1;
-											let myOption=[];
-											while(k++<that.has_distributed_length-1) {
-												myOption.push(<Option value={(i-1)*1000+k} key={k+100}>{k+1}&nbsp;<Badge style={{marginBottom:'4px'}}count={that.state.has_distributed[k+1]}/></Option>)
-											//console.log(myOption);
-											}
-											return myOption;
-									    })(that,i)
-								    }
-							    </Select>
-							</td>
+				//this.state.has_dated=this.props.has_dated;
+				//for(let i in this.state.has_dated){this.has_distributed_length=i;}
 
-	                	</tr>										
-	            	                          )
-                            }
-        	                                           })      
+				// 统计各刊已选稿件数，
+				for(let l in this.state.has_dated){
+					//console.log(this.state.has_dated[l]);  
+					//this.download_data[l]={};
+					console.log(this.props.has_dated)
+					if(this.props.has_dated[l]['state']!=false){
+						this.state.download_data[l]=this.props.has_dated[l]['state'];
+						this.state.has_distributed[this.props.has_dated[l]['state']]+=1;
+					}
+					//this.state.upload_data;
+					/*
+					{
+						data:["Alex", "PSIDPSIDPSIDSIDSODIS", "Alex`s editor"]
+						state:2
+					}
+					*/
+				}
+				//alert(this.state.contents);
+		        //console.log(this.props.has_dated);
+		        for(let i in this.props.has_dated){
+			        let items=this.props.has_dated[i]; 
+	        		if(items['state']==false){
+	        			//console.log(items);
+	        			this.state.upload_data.push(items);
+	        			//console.log(this.state.upload_data);
+	        			
+		        		this.state.container.push(
+		        			<tr key={i}>
+		            			{
+		            				items['data'].map((item,j)=>{
+		            				//if(j>0){
+			            				return(<td key={j}>{item}</td>)		    
+			            		          //}
+			            		                                }
+			            		              
+		            		                            )
+		            		    }
+		            		    
+				                <td class="timetable-calendar" style={{width:'3rem'}}>  
+				                	<Select labelInValue defaultValue={{key:""}} style={{width:'3rem'}} onChange={this.onChange2.bind(this)}>		
+										{
+											(function (that,i) {
+												let k=-1;
+												let myOption=[];
+												while(k++<that.get_data-1) {
+													myOption.push(<Option value={(i-1)*1000+k} key={k+100}>{k+1}&nbsp;<Badge style={{marginBottom:'4px'}}count={that.state.has_distributed[k+1]}/></Option>)
+												//console.log(myOption);
+												}
+												return myOption;
+										    })(that,i)
+									    }
+								    </Select>
+								</td>
+
+		                	</tr>										
+		            	                          )
+	                                        }
+	                    }
+        	                                                
         	    }
-			                                 }
+			                                 
 			return(
 				    <div class='white-back'>
 				          <div id='display-box'>
@@ -595,10 +617,19 @@ class HasDate extends Component{
 	   	    // 编号从1--n
 	   	    // download_data 已安排稿件对应刊数，has_distributed 各刊数对应已分配稿件数量
 	   	    // 表格从1开始,下拉菜单从0开始
+	   	    /*
+	   	    download_data
+				1: {data: Array(3), state: 4}
+				2: {data: Array(3), state: 2}
+
+			has_distributed是老的一套渲染体系,将download_data复制进去就好
+	   	    
+	   	    */
 	   	    this.state={'contents':[],'container':[],'upload_data':[],has_dated:{},has_distributed:{},changed:false,'download_data':{}};
 	   	    this.upload_data={};
+	   	    //this.state.has_dated={};
 	   	    this.get_data=4;  // 刊数  需要请求后端
-	   	    for(let l=1;l<this.get_data;l++){
+	   	    for(let l=1;l<this.get_data+1;l++){
 	   	    	this.state.has_distributed[l]=0;
 	   	    }
 //	   	    this.has_distributed={1:3,2:5,3:7,4:9};
@@ -611,13 +642,15 @@ class HasDate extends Component{
 	    }
 
 	    onChange2(value,e){
+	    	this.state.has_dated = JSON.parse(JSON.stringify(this.props.has_dated))
+	    	// this.state.has_dated=this.props.has_dated;
 	    	// console.log(value);
 	    	//console.log('pre:  '+e.target);
 	    	let key=value['key'];
 	    	key=(key-key%1000)/1000;
 	    	let label=value['label'];
 	    	// label.replace(/[&nbsp;]*/g,'');
-	    	alert(key);
+	    	//alert(key);
 	    	let pat=/\d+/i;
 	    	let pre=0;
 	    	label=pat.exec(label)[0];
@@ -626,29 +659,41 @@ class HasDate extends Component{
 	    	if(this.upload_data[key]==undefined){
 	    		this.upload_data[key]={};
 	    	}
-	    	console.log(this.state.has_dated);
+	    	console.log(this.props.has_dated);
 	    	this.upload_data[key]['刊数']=label;
-	    	this.upload_data[key]['姓名']=this.state.has_dated[key+1]['data'][0];
-	    	this.upload_data[key]['稿件名']=this.state.has_dated[key+1]['data'][1];
-
+	    	this.upload_data[key]['姓名']=this.props.has_dated[key+1]['data'][0];
+	    	this.upload_data[key]['稿件名']=this.props.has_dated[key+1]['data'][1];
+	    	if(this.props.has_dated[key+1]['state']==false){
+	    		this.props.has_dated[key+1]['state']==label;
+	    		this.state.has_dated[key+1]['state']==label;
+	    		this.props.change_the_other_date_component(key+1,label);
+	    		//alert('ckjdsnclkds');
+	    		console.log(this.state.has_dated);
+	    	}
+	    	//this.setState({'has_dated':this.state.has_dated});
 	    	console.log(this.upload_data);
+	    	//this.props.change_the_other_component(this.state.has_dated);
 	    }
 		render(){
 			let that=this;
 			//alert('changed');
 			//console.log(this.state.has_distributed);
 			//alert(this.props.content);
+			//this.state.has_dated = JSON.parse(JSON.stringify(this.props.has_dated))
 			if(this.props.content!=undefined){
 				this.state.contents=this.props.content;
-				this.state.has_dated=this.props.has_dated;
-				//for(let i in this.state.has_dated){this.has_distributed_length=i;}
+				//this.props.has_dated=this.props.has_dated;
+				//for(let i in this.props.has_dated){this.has_distributed_length=i;}
 
 				// 统计各刊已选稿件数，
-				for(let l in this.state.has_dated){
-					console.log(this.state.has_dated[l]);
+				for(let l in this.props.has_dated){
+					console.log(this.props.has_dated[l]);
 					//this.download_data[l]={};
-					this.state.download_data[l]=this.state.has_dated[l]['state'];
-					this.state.has_distributed[this.state.has_dated[l]['state']]+=1;
+					if(this.props.has_dated[l]['state']!=false){
+						console.log(this.props.has_dated)
+						this.state.download_data[l]=this.props.has_dated[l]['state'];
+						this.state.has_distributed[this.props.has_dated[l]['state']]+=1;
+					}
 					//this.state.upload_data;
 					/*
 					{
@@ -733,17 +778,25 @@ class Main extends Component{
    	 this.td_width=['3rem','3rem','9rem','3rem'];
    	 this.title=['状态','作者名','稿件名','负责编辑'];
    	 this.state={'contents':[],'changed':true,'has_dated':{}};
+   	 this.test=1;
+
    	 // has_dated 记录所有数据及状态
    }
    get_dated(){
+   		if(this.test!=1){
+   			return;
+   		}
+   		this.test+=1;
+   	    // 获取时间和分配状态
    	    let k=1;
 	    this.state.contents[1].map((items,i)=>{ 
     	if(items[0]==7){
     		this.state.has_dated[k]={}
     		this.state.has_dated[k]['data']=items.slice(1);
-    		this.state.has_dated[k]['state']=parseInt(4*Math.random()+1);   // 如果未分配则为false
-    		//this.state.has_dated[k]['state']=2;   // 如果未分配则为false
+    		//this.state.has_dated[k]['state']=parseInt(4*Math.random()+1);   // 如果未分配则为false
+    		this.state.has_dated[k]['state']=false;   // 如果未分配则为false
     		k+=1;
+    		console.log(this.state.has_dated)
     		//this.state.has_dated[i+1].unshift(i);
     		    	}
     		             
@@ -761,10 +814,22 @@ class Main extends Component{
         */
     }
    change_the_other_component(){
+   		this.setState({'changed':!this.state.changed});
+   }
+   // 将修改的位置还有对应的值传到父类函数中执行，因为在
+   change_the_other_date_component(key,data){
       // this.state.change=!this.state.changed;
       //alert(this.state.contents);
       //let i=this.props.content;
+      //alert(data);
+      console.log(data);
+      //data[1]['state']=1;
+      // for(let l in this.state.has_dated){
+      // 	this.state.has_dated[l]['state']=data[l]['state'];
+      // }
+      this.state.has_dated[key]['state']=data;
       this.setState({'changed':!this.state.changed});
+      this.setState({'has_dated':this.state.has_dated});
    }
    render(){
    	    this.state.contents=this.props.content;
@@ -786,7 +851,7 @@ class Main extends Component{
 			        						<main>
 			        							<div class='white-back'>
 			        								<Tabs defaultActiveKey="1">
-												      <TabPane tab="未排期" key="1"><HasNotDate content={this.state.contents} has_dated={this.state.has_dated} change_the_other_component={this.change_the_other_component.bind(this)}/></TabPane>
+												      <TabPane tab="未排期" key="1"><HasNotDate content={this.state.contents} has_dated={this.state.has_dated} change_the_other_date_component={this.change_the_other_date_component.bind(this)}/></TabPane>
 												      <TabPane tab="已排期" key="2"><HasDate content={this.state.contents} has_dated={this.state.has_dated} key={Math.random()}/></TabPane>
 												    </Tabs>
 			        							</div>

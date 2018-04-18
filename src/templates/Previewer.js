@@ -6,7 +6,7 @@ import { Select } from 'antd';
 import { Tabs } from 'antd';
 import ReactDOM from 'react-dom'
 import { DatePicker } from 'antd';
-import { Input } from 'antd';
+import { Input , Table} from 'antd';
 import axios from 'axios';
 const { MonthPicker, RangePicker } = DatePicker;
 const TabPane = Tabs.TabPane;
@@ -465,11 +465,11 @@ class Check_paper extends Component{
         	    }      
 	            			}
         	    
-			                                 
+
 			return(
 				    <div class='white-back'>
 				          <div id='display-box'>
-				              <table id="customers">
+				              <table id="customers" style={{border:'0'}}>
 				                <tr>
 				                <th>作者名</th>
 				                <th>稿件名</th>

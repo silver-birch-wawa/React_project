@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import 'antd/dist/antd.css'; 
-import { Button, Radio, Icon ,Modal} from 'antd';
+import { Table,Button, Radio, Icon ,Modal} from 'antd';
 import { Collapse } from 'antd';
 import { Select } from 'antd';
 import { Tabs } from 'antd';
@@ -231,51 +231,75 @@ class HasDistributed extends Component{
         'contents':nextProps.content[1]
       });
     }
-	distributePaper(contents){
-		    contents.map((item,index) => { 
-		        // alert(contents);
-		        //alert('调用更新');
-		        /* table的行 */
+	render(){
+			let columns = [{
+			  title: '作者名',
+			  dataIndex: 'name',
+			  key: 'name',
+			  render: (text,record) => <a href="#">{record.name}</a>,
+			}, {
+			  title: '稿件名',
+			  dataIndex: 'paperName',
+			  key: 'paperName',
+			}, {
+			  title: '负责编辑',
+			  dataIndex: 'editor',
+			  key: 'editor',
+			}];
+			//columns=[];
+
+			// let data = [{
+			//   key: '1',
+			//   name: 'John Brown1',
+			//   paperName: '32', 
+			//   editor:'New York1',
+			// }, {
+			//   key: '2',
+			//   name: 'John Brown2',
+			//   paperName: '320',
+			//   editor:'New York2',
+			// }, {
+			//   key: '3',
+			//   name: 'John Brown3',
+			//   paperName: '3200',
+			//   editor:'New York3',
+			// }];	
+			let data=[];
+
+	   		this.state.contents=this.props.content[1].slice(0);
+			
+		if(this.state.contents!=undefined){
+			console.log(this.state.contents)
+			this.state.contents.map((item,i)=>{
 		        var temp=item[0];
 			    if(item[0]=='已分配'||item[0]!=1){
 			    	item[0]='已分配';
-			    	this.container_finished.push(
-		            <tr>
-             		   { 
-             		   	 contents[index].map((item,i)=>{if(0<i){return (<td key={i} style={{'width':this.td_width[i]}}>{contents[index][i]}</td>)}})
-             		   }
-		            </tr>
-		            )
+					let temp={};
+					temp['key']=i;
+					temp['name']=item[1];
+					temp['paperName']=item[2];
+					temp['editor']=item[3];
+					data.push(temp);
              		item[0]=temp;
-		            
-		        }   
-		})
-             		   	//console.log(this.container_finished); 
-   }
+             	}
+				//alert(temp['name']);
+				//console.log(item);
+			}) 
+		}
+// content:["distributePaper",[[1,'Tom','java'],[7,'Jack','PHPPHPPHPPHPPHPPHPPHPPHPPHPPHP','Jack`s editor']],['none','Tom111111','Tom2','Tom3']]
 
-	render(){
-	   		this.state.contents=this.props.content[1].slice(0);
+
+	   		//this.state.contents=this.props.content[1].slice(0);
 	   		this.editors=this.props.content[2];
 	   		//alert(this.state.contents);    
-	        if(this.state.contents!=undefined){
-		   			this.distributePaper(this.state.contents); 
-		   	}
+	     //    if(this.state.contents!=undefined){
+		   	// 		this.distributePaper(this.state.contents); 
+		   	// }
+
 		   	// console.log('papapapa:'+this.props.content[1]);
 		   	return (
-		    	    	<div id='display-box'>
-						    	<table id="customers">
-					            <tr>
-					    
-		             	{
-		             		/* table的标题 */
-		             		this.title.map((item,i)=>{return (<th key={i} style={{'width':this.td_width[i]}}>{item}</th>)}
-		             			)
-		             	}
-					            </tr>
-					            {this.container_finished}
-							    </table>
-						</div>
-		            );
+				    	    <Table columns={columns} dataSource={data} />	
+		           );
 	}
 }
 class HasNotDistributed extends Component{
@@ -311,31 +335,7 @@ class HasNotDistributed extends Component{
       }      
 	}
 
-	distributePaper(contents){
-		    this.state.container_unfinished=[];
-		    contents.map((item,index) => { 
-		        // alert(contents);
-		        /* table的行 */
-		        //alert(item[0])
-			    if(item[0]==1){
-			    	item[0]='未分配';
-			    	this.state.container_unfinished.push(
-		            <tr>
-             		   { 
-             		   	contents[index].map((item,i)=>{if(i==1){return(<td key={i} style={{width:'2rem'}}>{contents[index][i]}</td>)}if(1<i){return(<td key={i}>{contents[index][i]}</td>)}})
-             		   }
-		                <td class='td-select'>
-		                  <Select id={{index}} onChange={this.handleChange.bind(this)} labelInValue defaultValue={{key:this.state.none}}>
-						 	      {this.editors.map((item,i)=>{ return (<Option value={index*10000+i} style={{width:'100%'}}  id={index}>{item}</Option>)})}
-						  </Select>
-						</td>
-		            </tr>
-		            )
-             		item[0]=1;
-		            //alert('container_unfinished'+this.container_unfinished.length)
-		        }    
-		})
-   }
+
    // 调用该函数使两个相邻组件更新一致
    change_the_other_component(){
    	  this.props.change_the_other_component();
@@ -361,31 +361,55 @@ class HasNotDistributed extends Component{
       this.change_the_other_component();
    }
 	render(){
-		    // let Type=this.props.content[0];
-		    // let backup=this.props.content[1].slice(0);
+			let columns = [{
+			  title: '作者名',
+			  dataIndex: 'name',
+			  key: 'name',
+			  render: (text,record) => <a href="#">{record.name}</a>,
+			}, {
+			  title: '稿件名',
+			  dataIndex: 'paperName',
+			  key: 'paperName',
+			}, {
+			  title: '负责编辑',
+			  dataIndex: 'editor',
+			  key: 'editor',
+			}];
+			let data=[];
+
 		    //this.contents=Object.assign([],this.props.content[1]);
 	   		this.state.contents=this.props.content[1].slice(0);
 	   		this.editors=this.props.content[2];
+
+		    this.state.contents.map((item,index) => { 
+		        // alert(contents);
+		        /* table的行 */
+		        //alert(item[0])
+			    if(item[0]==1){
+			    	item[0]='未分配';
+
+					let temp={};
+					temp['key']=index;
+					temp['name']=item[1];
+					temp['paperName']=item[2];
+					temp['editor']=
+					                  <Select id={{index}} onChange={this.handleChange.bind(this)} style={{width:'100%'}} labelInValue defaultValue={{key:this.state.none}}>
+									 	      {this.editors.map((item,i)=>{ return (<Option value={index*10000+i} style={{width:'100%'}}  id={index}>{item}</Option>)})}
+									  </Select>
+									;
+					data.push(temp);
+
+             		item[0]=1;
+		            //alert('container_unfinished'+this.container_unfinished.length)
+		        }    
+			})
+
+
+	   		//this.editors=this.props.content[2];
 	   		console.log(this.state.contents);    
-	        if(this.state.contents!=undefined){
-	        	    //console.log('AAAAA: '+this.contents)
-		   			this.distributePaper(this.state.contents);
-		   			// contents=backup;
-		   			//console.log('BBBBB: '+this.props.content[1])
-		   	}
 		   	return (
-		    	    	<div id='display-box'>
-						    	<table id="customers">
-					            <tr>
-					    
-		             	{
-		             		/* table的标题 */
-		             		this.title.map((item,i)=>{return (<th key={i} style={{'width':this.td_width[i]}}>{item}</th>)}
-		             			)
-		             	}
-					            </tr>
-					            {this.state.container_unfinished}
-							    </table>
+		    	    	<div>
+		    	    		<Table columns={columns} dataSource={data} />
 						    <Button type="primary" id='Tab_submit' style={{float:'right',marginTop:'10px',marginRight:'10px'}} onClick={this.handleClick.bind(this)}>提交</Button>
 						</div>
 		            );
@@ -395,58 +419,73 @@ class HasNotDistributed extends Component{
 class Paper_status extends Component{
     constructor(props){
    	    super(props);
+   	    this.state={'contents':[],sortedInfo: null};
 	   	this.status_code={1:'未分配',2:'审阅中',3:'未通过',4:'待修改',5:'通过',6:'格式确认',7:'已缴费'}
 	   	this.td_width=['3rem','3rem','9rem','3rem']
 	   	this.title=['状态','作者名','稿件名','负责编辑']
    	    this.contents={};
    	    this.editors=[];
    	    this.container_finished=[]
+   	    this.value={'未分配':1,'审阅中':2,'未通过':3,'待修改':4,'通过':5,'格式确认':6,'已缴费':7}
     }
-	show(contents){
-		    //排序后输出
-		    contents=contents.sort(function(a,b){return a[0]-b[0]});
-		    contents.map((item,index) => { 
-		        //console.log(contents);
-		        //item[0]=1
-		        /* table的行 */
-		        //alert(item[0])
-                var temp=item[0];
-                item[0]=this.status_code[item[0]];
-			    	this.container_finished.push(
-		            <tr>
-             		   { 
-             		   	contents[index].map((item,i)=>{if(i<2){return (<td key={i} style={{'width':this.td_width[i]}}>{contents[index][i]}</td>)}else{return (<td key={i}>{contents[index][i]}</td>)}})
-             		   }
-		            </tr>
-		            )
-             	item[0]=temp;
-		            //alert('container_unfinished'+this.container_unfinished.length)  
-		})
-   }
 	render(){
 		    //alert(this.props.content);
 		    if(this.props.content!=undefined){
 		    	    //console.log(this.props.content[1])
-				    this.contents=this.props.content[1].slice(0);
+				    this.state.contents=this.props.content[1].slice(0);
 			   		this.editors=this.props.content[2];    
-			   		this.show(this.contents);
+			   		
 			}
+			this.state.contents=this.state.contents.sort(function(a,b){return a[0]-b[0]});
+
+			let columns = [{
+			  title: '状态',
+			  dataIndex: 'status',
+			  key: 'status',
+			  sorter: (a, b) => this.value[a.status]-this.value[b.status],
+			},{
+			  title: '作者名',
+			  dataIndex: 'name',
+			  key: 'name',
+			  render: (text,record) => <a href="#">{record.name}</a>,
+			}, {
+			  title: '稿件名',
+			  dataIndex: 'paperName',
+			  key: 'paperName',
+			}, {
+			  title: '负责编辑',
+			  dataIndex: 'editor',
+			  key: 'editor',
+			}];
+			let data=[];
+
+			
+			
+			//alert('辛苦索尼新款上线啊');
+
+		    if(this.state.contents!=undefined){
+		    	this.state.contents.map((item,index) => { 
+		    		let Temp={};
+	                var temp=item[0];
+	                item[0]=this.status_code[item[0]];
+					
+					Temp['status']=item[0];
+					Temp['key']=index;
+					Temp['name']=item[1];
+					Temp['paperName']=item[2];
+					Temp['editor']=item[3];
+					data.push(Temp);
+
+	             	item[0]=temp;
+			            //alert('container_unfinished'+this.container_unfinished.length)  
+			    });
+			}
+
+			//this.setState({'contents':this.state.contents});
 			return (
-				    	    	<div id='display-box'>
-								    	<table id="customers">
-							            <tr>
-							    
-				             	{
-				             		/* table的标题 */
-				             		this.title.map((item,i)=>{return (<th key={i} style={{'width':this.td_width[i]}}>{item}</th>)}
-				             			)
-				             	}
-							            </tr>
-							            {this.container_finished}
-									    </table>
-								</div>
+					        <Table columns={columns} dataSource={data} onChange={this.handleChange} />	
 				    );
-				     // alert(this.props.content)
+
 		    }
 	
 }
@@ -470,6 +509,9 @@ class HasNotDate extends Component{
 	   	    
 	   	    this.has_dated={};
 	   	    
+	   	    this.columns;
+	   	    this.data;
+
 	   	    this.changed=false;
 	   	    //this.state.has_distributed=this.has_distributed;
 	   	    // this.state.has_distributed={1:3,2:8,3:19,4:9};
@@ -517,7 +559,8 @@ class HasNotDate extends Component{
 	    	}
 	    	//this.setState({'has_dated':this.state.has_dated});
 	    	//this.setState({'has_dated':this.props.has_dated});
-	    	console.log(this.upload_data);
+	    	
+	    	console.log(this.upload_data); // 稿件排期上传点
 	    	
 	    }
  		render(){
@@ -547,66 +590,73 @@ class HasNotDate extends Component{
 					}
 					*/
 				}
+
+
 				//alert(this.state.contents);
 		        //console.log(this.props.has_dated);
-		        for(let i in this.props.has_dated){
+			let columns = [{
+			  title: '作者名',
+			  dataIndex: 'name',
+			  key: 'name',
+			  render: (text,record) => <a href="#">{record.name}</a>,
+			}, {
+			  title: '稿件名',
+			  dataIndex: 'paperName',
+			  key: 'paperName',
+			}, {
+			  title: '责任编辑',
+			  dataIndex: 'editor',
+			  key: 'editor',
+			},{
+			  title: '排期',
+			  dataIndex: 'timetable',
+			  key: 'timetable',
+			}];
+			let data=[];
+			console.log(this.props.has_dated);
+		    for(let i in this.props.has_dated){
 			        let items=this.props.has_dated[i]; 
 	        		if(items['state']==false){
 	        			//console.log(items);
 	        			this.state.upload_data.push(items);
 	        			//console.log(this.state.upload_data);
-	        			
-		        		this.state.container.push(
-		        			<tr key={i}>
-		            			{
-		            				items['data'].map((item,j)=>{
-		            				//if(j>0){
-			            				return(<td key={j}>{item}</td>)		    
-			            		          //}
-			            		                                }
-			            		              
-		            		                            )
-		            		    }
-		            		    
-				                <td class="timetable-calendar" style={{width:'3rem'}}>  
-				                	<Select labelInValue defaultValue={{key:""}} style={{width:'3rem'}} onChange={this.onChange2.bind(this)}>		
-										{
-											(function (that,i) {
-												let k=-1;
-												let myOption=[];
-												while(k++<that.get_data-1) {
-													myOption.push(<Option value={(i-1)*1000+k} key={k+100}>{k+1}&nbsp;<Badge style={{marginBottom:'4px'}}count={that.state.has_distributed[k+1]}/></Option>)
-												//console.log(myOption);
-												}
-												return myOption;
-										    })(that,i)
-									    }
-								    </Select>
-								</td>
+					        	let Temp={};
+						        let items=this.props.has_dated[i]; 
+				        		if(items['state']==false){
+				        			this.state.upload_data.push(items);
+				        			//console.log(this.state.upload_data);
+				        			Temp['name']=items['data'][0];
+				        			Temp['paperName']=items['data'][1];
+				        			Temp['editor']=items['data'][2];
+				        			Temp['timetable']=<Select labelInValue defaultValue={{key:""}} style={{width:'100%'}} onChange={this.onChange2.bind(this)}>		
+													{
+														(function (that,i) {
+															let k=-1;
+															let myOption=[];
+															while(k++<that.get_data-1) {
+																myOption.push(<Option value={(i-1)*1000+k} key={k+100}>{k+1}&nbsp;<Badge style={{marginBottom:'4px'}}count={that.state.has_distributed[k+1]}/></Option>)
+															//console.log(myOption);
+															}
+															return myOption;
+													    })(that,i)
+												    }
+											    </Select>;
+									data.push(Temp);
+				                          }
+				                    }
+			        	                                                
+			        	    
 
-		                	</tr>										
-		            	                          )
-	                                        }
 	                    }
-        	                                                
+	                        //console.log(this.data);
+        	             	this.data=data;
+        					this.columns=columns;                                           
         	    }
-			                                 
+
 			return(
 				    <div class='white-back'>
-				          <div id='display-box'>
-				              <table id="customers">
-				                <tr>
-				                <th>作者名</th>
-				                <th>稿件名</th>
-				                <th>责任编辑</th>
-				                <th>排期</th>
-				                </tr>
-				                {
-				                	this.state.container
-				                }
-				              </table>
-				          </div>
-				          <p style={{fontSize:'20px',marginTop:'20px',marginLeft:'10px'}}>注: 标红数字为已分配稿件数量</p>
+				          <Table columns={this.columns} dataSource={this.data} />	
+				          <p style={{fontSize:'20px',marginTop:'20px',marginLeft:'10px'}}>注: <span style={{'color':'red'}}>标红</span>数字为已分配稿件数量</p>
 				    </div>
 				)
 	        }
@@ -636,6 +686,9 @@ class HasDate extends Component{
 //			this.has_distributed={};
 	   	    this.has_distributed_length=0;
 	   	    
+	   	    this.columns;
+	   	    this.data;
+
 	   	    this.changed=false;
 	   	    //this.state.has_distributed=this.has_distributed;
 	   	    // this.state.has_distributed={1:3,2:8,3:19,4:9};
@@ -676,93 +729,61 @@ class HasDate extends Component{
 	    }
 		render(){
 			let that=this;
-			//alert('changed');
-			//console.log(this.state.has_distributed);
-			//alert(this.props.content);
-			//this.state.has_dated = JSON.parse(JSON.stringify(this.props.has_dated))
-			if(this.props.content!=undefined){
-				this.state.contents=this.props.content;
-				//this.props.has_dated=this.props.has_dated;
-				//for(let i in this.props.has_dated){this.has_distributed_length=i;}
-
-				// 统计各刊已选稿件数，
-				for(let l in this.props.has_dated){
-					console.log(this.props.has_dated[l]);
-					//this.download_data[l]={};
-					if(this.props.has_dated[l]['state']!=false){
-						console.log(this.props.has_dated)
-						this.state.download_data[l]=this.props.has_dated[l]['state'];
-						this.state.has_distributed[this.props.has_dated[l]['state']]+=1;
-					}
-					//this.state.upload_data;
-					/*
-					{
-						data:["Alex", "PSIDPSIDPSIDSIDSODIS", "Alex`s editor"]
-						state:2
-					}
-					*/
-				}
-				//alert(this.state.contents);
-		        
-		        for(let i in this.props.has_dated){
+			let columns = [{
+			  title: '作者名',
+			  dataIndex: 'name',
+			  key: 'name',
+			  render: (text,record) => <a href="#">{record.name}</a>,
+			}, {
+			  title: '稿件名',
+			  dataIndex: 'paperName',
+			  key: 'paperName',
+			}, {
+			  title: '责任编辑',
+			  dataIndex: 'editor',
+			  key: 'editor',
+			},{
+			  title: '排期',
+			  dataIndex: 'timetable',
+			  key: 'timetable',
+			  sorter: (a, b) => a.timetable-b.timetable,
+			}];
+			let data=[];
+			console.log(this.props.has_dated);
+		    for(let i in this.props.has_dated){
 			        let items=this.props.has_dated[i]; 
 	        		if(items['state']!=false){
-	        			//alert(items);
+	        			//console.log(items);
 	        			this.state.upload_data.push(items);
 	        			//console.log(this.state.upload_data);
-	        			
-		        		this.state.container.push(
-		        			<tr key={i}>
-		            			{
-		            				items['data'].map((item,j)=>{
-		            				//if(j>0){
-			            				return(<td key={j}>{item}</td>)		    
-			            		          //}
-			            		                                }
-			            		              
-		            		                            )
-		            		    }
-		            		    
-				                <td class="timetable-calendar" style={{width:'3rem'}}>  
-				                	<Select labelInValue defaultValue={{key:this.state.download_data[i]?this.state.download_data[i]:""}} style={{width:'3rem'}} onChange={this.onChange2.bind(this)}>		
-										{
-											(function (that,i) {
-												let k=-1;
-												let myOption=[];
-												while(k++<that.get_data-1) {
-
-													myOption.push(<Option value={(i-1)*1000+k} key={k+100}>{k+1}&nbsp;<Badge style={{marginBottom:'4px'}}count={that.state.has_distributed[k+1]}/></Option>)
-												//console.log(myOption);
-												}
-												return myOption;
-										    })(that,i)
-									    }
-								    </Select>
-								</td>
-
-		                	</tr>										
-		            	                          )
-	                                        }
-	                    }
-        	                                                
+			        	let Temp={};
+				        let items=this.props.has_dated[i]; 
+				        //alert('action');
+				        //console.log(items);
+		        		// if(items['state']!=false){
+		        		// 	alert('pppp');
+		        		//console.log(items);
+	        			this.state.upload_data.push(items);
+	        			//console.log(this.state.upload_data);
+	        			Temp['name']=items['data'][0];
+	        			Temp['paperName']=items['data'][1];
+	        			Temp['editor']=items['data'][2];
+	        			Temp['timetable']=items['state'];
+						data.push(Temp);
+			                                 }
+				                    //}
+			        	                                                
+			        	    
+	                        //console.log(this.data);
+        	             	this.data=data;
+        					this.columns=columns; 
+	                                                              
         	    }
-			                                 
+
 			return(
 				    <div class='white-back'>
-				          <div id='display-box'>
-				              <table id="customers">
-				                <tr>
-				                <th>作者名</th>
-				                <th>稿件名</th>
-				                <th>责任编辑</th>
-				                <th>排期</th>
-				                </tr>
-				                {
-				                	this.state.container
-				                }
-				              </table>
-				          </div>
-				          <p style={{fontSize:'20px',marginTop:'20px',marginLeft:'10px'}}>注: 标红数字为已分配稿件数量</p>
+				          <Table columns={this.columns} dataSource={this.data} />	
+				          <p style={{fontSize:'20px',marginTop:'20px',marginLeft:'10px'}}>注: <span style={{'color':'red'}}>标红</span>数字为已分配稿件数量</p>
 				    </div>
 				)
 	        }
@@ -774,7 +795,7 @@ class Main extends Component{
    constructor(props){
    	 super(props);
 
-   	 this.status_code={1:'未分配',2:'审阅中',3:'未通过',4:'待修改',5:'通过',6:'格式确认',7:'已缴费'};
+   	 this.status_code={1:'未分配',2:'审阅中',3:'未通过',4:'待修改',5:'通过',6:'格式确认' ,7:'已缴费'};
    	 this.td_width=['3rem','3rem','9rem','3rem'];
    	 this.title=['状态','作者名','稿件名','负责编辑'];
    	 this.state={'contents':[],'changed':true,'has_dated':{}};
@@ -816,6 +837,7 @@ class Main extends Component{
    change_the_other_component(){
    		this.setState({'changed':!this.state.changed});
    }
+   // 将修改的位置还有对应的值传到父类函数中执行，因为在
    change_the_other_date_component(key,data){
       // this.state.change=!this.state.changed;
       //alert(this.state.contents);

@@ -20,8 +20,8 @@
      }
      #display-box .ant-select-selection{
      	/*height:100%!important;*/
-     	border-radius:0px !important;
-        border:1px solid white;
+     	/*border-radius:0px !important;*/
+        /*border:1px solid white;*/
      }
      #display-box .ant-select-selection-selected-value{
      	font-size:0.6rem;
@@ -252,7 +252,7 @@
     }
 
     #display-box{
-      border: 1px solid grey;
+      /*border: 1px solid grey;*/
       padding: 10px;
     }
     
@@ -260,17 +260,19 @@
     /*表格*/
     #customers
       {
-      font-family:'Comic Sans MS', cursive, sans-serif;
-      width:100%;
-      text-align:center;
-      border-collapse:collapse;
-      background-color:white;       
+
+	      font-family:'Comic Sans MS', cursive, sans-serif;
+	      width:100%;
+	      text-align:center;
+	      border-collapse:collapse;
+	      background-color:white;       
       }
     #customers td, #customers th 
       {
-      font-size:0.6rem;
-      border:1px solid #98bf21;    
-      padding:4px 7px 5px 10px;     
+	      font-size:0.6rem;
+	      /*border:1px solid #98bf21; */
+	      border-bottom:1px solid #e8e8e8;;
+	      padding:8px 15px 8px 15px;     
       }
     .ant-collapse > .ant-collapse-item > .ant-collapse-header{
     	line-height: 4px !important;
@@ -280,19 +282,20 @@
     }
     #customers th 
       {
-      font-size:0.7rem;
-      padding-top:5px;
-      padding-bottom:4px;
-      background-color:#A7C942;
-      color:#ffffff;
+	      font-size:0.7rem;
+	      padding-top:15px;
+	      padding-bottom:15px;
+	      /*background-color:#A7C942;*/
+	      background: #fafafa;
+	      /*color:#ffffff;*/
       }
     #customers tr.alt td 
       {
-      font-size:0.66rem;
-      color:#000000;
-      z-index:5;
-      background-color:#aba4a4 !important;
+	      font-size:0.66rem;
+	      color:#000000;
+	      z-index:5;
+	      background-color:#aba4a4 !important;
       }
     #customers .td-select{
-    	padding:0px 0px 0px 0px!important;
+    	/*padding:0px 0px 0px 0px!important;*/
     }
