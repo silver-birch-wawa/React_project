@@ -8,6 +8,10 @@ import ReactDOM from 'react-dom'
 import { DatePicker } from 'antd';
 import { Input , Table} from 'antd';
 import axios from 'axios';
+
+import {Menu} from  'antd';
+const MenuItemGroup = Menu.ItemGroup;
+
 const { MonthPicker, RangePicker } = DatePicker;
 const TabPane = Tabs.TabPane;
 const Option = Select.Option;
@@ -134,47 +138,12 @@ class Aside extends Component{
         ajax_get('http://localhost:3000',this);
         //alert('xxxxx');
     }
-	action(word,e){
-        // 动画操作:
-		   if(document.querySelector('body').offsetWidth>560)
-		   {
-	           for(var i in this.refs)
-	           {
-	              if(i!=word){
-	              	   let rstyle=this.refs[i].style;
-			           rstyle.color='grey';
-			           rstyle.height='1.2rem';
-			           rstyle.fontSize='0.7rem';
-			           rstyle.paddingLeft='2.2rem';
-			           //rstyle.paddingBottom='0.2rem';
-	              }
-	                   let rstyle=this.refs[word].style;
-			           rstyle.color='#337ab7';
-			           rstyle.paddingLeft='2.2rem';
-			           if(word=='check'){
-			           	  rstyle.paddingLeft='2.2rem';
-			           }
-			           rstyle.height='1.6rem';
-			           rstyle.fontSize='0.8rem';
-	                   //rstyle.paddingBottom='0.3rem';
-	           }
-		   }
-		   else{
-	           for(var i in this.refs)
-	           {
-	              if(i!=word){
-	              	   let rstyle=this.refs[i].style;
-			           rstyle.color='grey';
-	              }
-	                   let rstyle=this.refs[word].style;
-			           rstyle.color='#337ab7';
-	           }		   	
-		   };
-		      // alert(word)
-		      this.state.content[0]=word;
-		      // alert('state'+this.state.content['distributePaper']);
-           	  this.props.change_content(this.state.content);
-   	    }
+    handleClick(e){
+   	  console.log(e)
+      this.state.content[0]=e['key'];
+      // alert('state'+this.state.content['distributePaper']);
+   	  this.props.change_content(this.state.content);   	  
+    }
 
    render(){
    	    // if(this.state.data!=[]){
@@ -187,25 +156,23 @@ class Aside extends Component{
         //     alert(this.state.content);
    	    // }
    	    return(
-   	    <aside>
-	        <Collapse accordion defaultActiveKey={['1']}>
-			    <Panel header={<p style={{marginBottom:'0em',marginRight:'1rem'}}>目录</p>} id="menu" key="1">		           		           
-		           <div class="catalog" id="check_paper" onClick={this.action.bind(this,'Check_paper')} ref='Check_paper'>
-		                <Icon type="clock-circle-o" />&nbsp;
-		                稿件审理
-		           </div>
-		           <div class="catalog" id="re_check_paper" onClick={this.action.bind(this,'Re_check_paper')} ref='Re_check_paper'>
-		                <Icon type="clock-circle" />&nbsp;
-		                稿件重审
-		           </div>
-		           <div class="catalog" id="Personal_info_change" onClick={this.action.bind(this,'Personal_info_change')} ref='Personal_info_change'>
-		                <Icon type="user-add" />&nbsp;
-		                个人信息
-		           </div>		           
-			    </Panel>			    
-			</Collapse>
-
-        </aside>
+   	    	<div style={{width:'20%',padding:'0px'}}>
+	    		<Menu
+					mode="inline"
+					inlineCollapsed = "false"
+					defaultSelectedKeys={[this.state.selectedKeys]}
+					style={{ width:"80%",paddingLeft:'25px'}}
+					onClick={this.handleClick.bind(this)}
+				>
+					<MenuItemGroup key="i1" title={<span><Icon type="bars" /><span>功能菜单</span></span>}>
+						<Menu.Item key="Check_paper"><Icon type="pie-chart" />&nbsp;稿件审理</Menu.Item>
+						<Menu.Item key="Re_check_paper"><Icon type="calendar" />&nbsp;稿件重审</Menu.Item>
+					</MenuItemGroup>
+					<MenuItemGroup key="i2" title={<span><Icon type="user" /><span>个人设置</span></span>}>
+						<Menu.Item key="Personal_info_change"> <Icon type="user-add" />&nbsp;个人信息修改</Menu.Item>
+					</MenuItemGroup>
+				</Menu>			   
+			</div>         
    	    )
    }
 }
@@ -268,6 +235,7 @@ class Re_check_paper extends Component{
 				}
 			}
 			console.log(upload_data)
+			// 审核结果上传点  
             // this.upload_data.push();
 	    }
 	    handleShrink(value,e){
@@ -277,6 +245,8 @@ class Re_check_paper extends Component{
 	    	var text= document.getElementById('text-area'+value).value;
 	    	//alert(text);
             this.container[value-1].push(text);
+
+            document.getElementsByClassName('ant-collapse-header')[value-1].click()
             document.getElementById('click-button').click();
 	    }
 		render(){
@@ -416,6 +386,9 @@ class Check_paper extends Component{
 	    	var text= document.getElementById('text-area'+value).value;
 	    	//alert(text);
             this.container[value-1].push(text);
+
+            document.getElementsByClassName('ant-collapse-header')[value-1].click()
+
             document.getElementById('click-button').click()
 	    }
 		render(){

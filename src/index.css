@@ -15,6 +15,9 @@
      aside .ant-collapse > .ant-collapse-item > .ant-collapse-header .arrow{
      	margin-top:-10px !important;
      }
+     aside .ant-menu-inline-collapsed .ant-menu-item-group-title{
+     	/*padding-left:0px !important; */
+     }
      #display-box .ant-select{
      	display:block !important;
      }

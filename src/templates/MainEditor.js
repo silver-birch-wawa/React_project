@@ -9,6 +9,10 @@ import { DatePicker } from 'antd';
 import { Input} from 'antd';
 import axios from 'axios';
 import { Badge } from 'antd';
+
+import {Menu} from  'antd';
+const MenuItemGroup = Menu.ItemGroup;
+
 const InputGroup = Input.Group;
 const { MonthPicker, RangePicker } = DatePicker;
 const TabPane = Tabs.TabPane;
@@ -122,7 +126,7 @@ class Aside extends Component{
 			// 如果是稿件分配，则
 			// ['Module_name',[status(1/0),author_name,paper-name,(editor'sname)],[...]]
 
-			content:["distributePaper",[[1,'Tom','java'],[7,'Jack','PHPPHPPHPPHPPHPPHPPHPPHPPHPPHP','Jack`s editor'],[7,'Alex','PSIDPSIDPSIDSIDSODIS','Alex`s editor'],[4,'Jason','PythonPythonPythonPythonPythonPythonPython','Jason`s editor']],['none','Tom111111','Tom2','Tom3']]
+			content:["distributePaper",[[1,'Tom','java'],[7,'Jack','PHPPHPPHPPHPPHPPHPPHPPHPPHPPHP','Jack`s editor'],[7,'Alex','PSIDPSIDPSIDSIDSODIS','Alex`s editor'],[7,'Jason','PythonPythonPythonPythonPythonPythonPython','Jason`s editor']],['none','Tom111111','Tom2','Tom3']]
 			,data:[]
 		}
 		//sessionStorage.clear();
@@ -137,45 +141,17 @@ class Aside extends Component{
     }
 	action(word,e){
         // 动画操作:
-		   if(document.querySelector('body').offsetWidth>560)
-		   {
-	           for(var i in this.refs)
-	           {
-	              if(i!=word){
-	              	   let rstyle=this.refs[i].style;
-			           rstyle.color='grey';
-			           rstyle.height='1.2rem';
-			           rstyle.fontSize='0.7rem';
-			           rstyle.paddingLeft='2.2rem';
-			           //rstyle.paddingBottom='0.2rem';
-	              }
-	                   let rstyle=this.refs[word].style;
-			           rstyle.color='#337ab7';
-			           rstyle.paddingLeft='2.2rem';
-			           if(word=='check'){
-			           	  rstyle.paddingLeft='2.2rem';
-			           }
-			           rstyle.height='1.6rem';
-			           rstyle.fontSize='0.8rem';
-	                   //rstyle.paddingBottom='0.3rem';
-	           }
-		   }
-		   else{
-	           for(var i in this.refs)
-	           {
-	              if(i!=word){
-	              	   let rstyle=this.refs[i].style;
-			           rstyle.color='grey';
-	              }
-	                   let rstyle=this.refs[word].style;
-			           rstyle.color='#337ab7';
-	           }		   	
-		   };
-		      // alert(word)
+		      alert(word)
 		      this.state.content[0]=word;
 		      // alert('state'+this.state.content['distributePaper']);
            	  this.props.change_content(this.state.content);
    	    }
+   handleClick(e){
+   	  console.log(e)
+      this.state.content[0]=e['key'];
+      // alert('state'+this.state.content['distributePaper']);
+   	  this.props.change_content(this.state.content);   	  
+   }
 
    render(){
    	    // if(this.state.data!=[]){
@@ -188,30 +164,24 @@ class Aside extends Component{
         //     alert(this.state.content);
    	    // }
    	    return(
-   	    <aside>
-	        <Collapse accordion defaultActiveKey={['1']}>
-			    <Panel header={<p style={{marginBottom:'0em',marginRight:'1rem'}}>目录</p>} id="menu" key="1">		           
-		           <div class="catalog" id="distributePaper" onClick={this.action.bind(this,'distributePaper')} ref='distributePaper'>
-		                <Icon type="pie-chart" />&nbsp;
-		                稿件分配
-		           </div>
-		           
-		           <div class="catalog" id="timetable" onClick={this.action.bind(this,'timetable')} ref='timetable'>
-		                <Icon type="calendar" />&nbsp;
-		                稿件排期
-		           </div>
-		           <div class="catalog" id="paper-status" onClick={this.action.bind(this,'paper-status')} ref='paper-status'>
-		                <Icon type="clock-circle-o" />&nbsp;
-		                稿件状态
-		           </div>
-		           <div class="catalog" id="Personal_info_change" onClick={this.action.bind(this,'Personal_info_change')} ref='Personal_info_change'>
-		                <Icon type="user-add" />&nbsp;
-		                个人信息
-		           </div>
-			    </Panel>			    
-			</Collapse>
-
-        </aside>
+   	    	<div style={{width:'20%',padding:'0px'}}>
+	    		<Menu
+					mode="inline"
+					inlineCollapsed = "false"
+					defaultSelectedKeys={[this.state.selectedKeys]}
+					style={{ width:"80%",paddingLeft:'25px'}}
+					onClick={this.handleClick.bind(this)}
+				>
+					<MenuItemGroup key="i1" style={{paddingLeft:'-50px!important'}} title={<span><Icon type="bars" /><span>功能菜单</span></span>}>
+						<Menu.Item key="distributePaper"><Icon type="pie-chart" />&nbsp;稿件分配</Menu.Item>
+						<Menu.Item key="timetable"><Icon type="calendar" />&nbsp;稿件排期</Menu.Item>
+						<Menu.Item key="paper-status"><Icon type="clock-circle-o" />&nbsp;稿件状态</Menu.Item>
+					</MenuItemGroup>
+					<MenuItemGroup key="i2"style={{paddingLeft:'-50px!important'}} title={<span><Icon type="user" /><span>个人设置</span></span>}>
+						<Menu.Item key="Personal_info_change"> <Icon type="user-add" />&nbsp;个人信息修改</Menu.Item>
+					</MenuItemGroup>
+				</Menu>			   
+			</div> 
    	    )
    }
 }
@@ -379,6 +349,7 @@ class HasNotDistributed extends Component{
 
 		    //this.contents=Object.assign([],this.props.content[1]);
 	   		this.state.contents=this.props.content[1].slice(0);
+
 	   		this.editors=this.props.content[2];
 
 		    this.state.contents.map((item,index) => { 
@@ -425,7 +396,7 @@ class Paper_status extends Component{
 	   	this.title=['状态','作者名','稿件名','负责编辑']
    	    this.contents={};
    	    this.editors=[];
-   	    this.container_finished=[]
+   	    this.container_finished=[];
    	    this.value={'未分配':1,'审阅中':2,'未通过':3,'待修改':4,'通过':5,'格式确认':6,'已缴费':7}
     }
 	render(){
@@ -466,15 +437,22 @@ class Paper_status extends Component{
 		    if(this.state.contents!=undefined){
 		    	this.state.contents.map((item,index) => { 
 		    		let Temp={};
+		    		console.log('target');
+		    		console.log(this.state.content);
 	                var temp=item[0];
-	                item[0]=this.status_code[item[0]];
-					
+	                //console.log(item[0]);
+//	                item[0]=this.status_code[item[0]]?this.status_code[item[0]]:this.status_code[item[0]['key']];
+					let status=(this.props.content[1][index][0]);
+					console.log(status);
+					//item[0]=this.status_code[item[0]];
+					item[0]=this.status_code[status];					
 					Temp['status']=item[0];
 					Temp['key']=index;
 					Temp['name']=item[1];
 					Temp['paperName']=item[2];
 					Temp['editor']=item[3];
 					data.push(Temp);
+
 
 	             	item[0]=temp;
 			            //alert('container_unfinished'+this.container_unfinished.length)  
@@ -483,7 +461,9 @@ class Paper_status extends Component{
 
 			//this.setState({'contents':this.state.contents});
 			return (
+						<div class='white-back' style={{border:'1px solid grey',borderRadius:'5px'}}>
 					        <Table columns={columns} dataSource={data} onChange={this.handleChange} />	
+					    </div>
 				    );
 
 		    }
@@ -572,9 +552,13 @@ class HasNotDate extends Component{
 				this.state.contents=this.props.content;
 				//this.state.has_dated=this.props.has_dated;
 				//for(let i in this.state.has_dated){this.has_distributed_length=i;}
-
+				console.log(this.props.has_dated);
+				console.log(this.state.has_dated);
 				// 统计各刊已选稿件数，
-				for(let l in this.state.has_dated){
+				for(let l=1;l<this.get_data+1;l++){
+	   	    		this.state.has_distributed[l]=0;
+	   	    	}
+				for(let l in this.props.has_dated){
 					//console.log(this.state.has_dated[l]);  
 					//this.download_data[l]={};
 					console.log(this.props.has_dated)
@@ -590,8 +574,8 @@ class HasNotDate extends Component{
 					}
 					*/
 				}
-
-
+				console.log('out!!!!!!!');
+				console.log(this.state.has_distributed);
 				//alert(this.state.contents);
 		        //console.log(this.props.has_dated);
 			let columns = [{
@@ -814,8 +798,8 @@ class Main extends Component{
     	if(items[0]==7){
     		this.state.has_dated[k]={}
     		this.state.has_dated[k]['data']=items.slice(1);
-    		//this.state.has_dated[k]['state']=parseInt(4*Math.random()+1);   // 如果未分配则为false
-    		this.state.has_dated[k]['state']=false;   // 如果未分配则为false
+    		this.state.has_dated[k]['state']=parseInt(4*Math.random()+1)>2?false:2;   // 如果未分配则为false
+    		//this.state.has_dated[k]['state']=false;   // 如果未分配则为false
     		k+=1;
     		console.log(this.state.has_dated)
     		//this.state.has_dated[i+1].unshift(i);
@@ -907,7 +891,6 @@ class Editor extends Component {
 
 	render() {
 	  	//alert('alert:\n'+this.state.data);
-	  	
 	    return (
 	        <html className='html'>
 		      <Header/>

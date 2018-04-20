@@ -75,18 +75,35 @@ class Container extends Component{
 		}
 //		console.log(value);
 	}
+	is_tel(str,e){
+		if(this.upload[str]==undefined){
+			return 1;
+		}
+		let pat=/\d+/i;
+    	let label=pat.exec(this.upload[str]);
+    	if(label==null||label[0]!=e.target.value){
+    		alert('请输入正确的电话号码');
+    		return 0;
+    	}
+	}
+
 	handleClick(e){
 		console.log(this.upload);
 		if(isEmptyObject(this.upload)){
 			alert('表单为空！');
 			return ;
 		}
-		let pat=/\d+/i;
-    	let label=pat.exec(this.upload['联系方式']);
-    	if(label==null||label[0]!=e.target.value){
-    		alert('请输入正确的电话号码');
-    		return;
-    	}
+		// let pat=/\d+/i;
+  //   	let label=pat.exec(this.upload['联系方式']);
+  //   	if(label==null||label[0]!=e.target.value){
+  //   		alert('请输入正确的电话号码');
+  //   		return;
+  //   	}
+  		if(this.is_tel('联系方式',e)==0){
+  			return;
+  		}
+    	// 内容上传点
+    	console.log(this.upload);	
 		window.location.reload();
 	}
 	render(){
