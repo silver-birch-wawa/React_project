@@ -9,7 +9,6 @@ import { DatePicker } from 'antd';
 import { Input} from 'antd';
 import axios from 'axios';
 import { Badge } from 'antd';
-
 import {Menu} from  'antd';
 const MenuItemGroup = Menu.ItemGroup;
 
@@ -176,8 +175,6 @@ class Aside extends Component{
 						<Menu.Item key="distributePaper"><Icon type="pie-chart" />&nbsp;稿件分配</Menu.Item>
 						<Menu.Item key="timetable"><Icon type="calendar" />&nbsp;稿件排期</Menu.Item>
 						<Menu.Item key="paper-status"><Icon type="clock-circle-o" />&nbsp;稿件状态</Menu.Item>
-					</MenuItemGroup>
-					<MenuItemGroup key="i2"style={{paddingLeft:'-50px!important'}} title={<span><Icon type="user" /><span>个人设置</span></span>}>
 						<Menu.Item key="Personal_info_change"> <Icon type="user-add" />&nbsp;个人信息修改</Menu.Item>
 					</MenuItemGroup>
 				</Menu>			   
@@ -477,7 +474,7 @@ class HasNotDate extends Component{
 	   	    // download_data 已安排稿件对应刊数，has_distributed 各刊数对应已分配稿件数量
 	   	    // 表格从1开始,下拉菜单从0开始
 	   	    // 
-	   	    this.state={'contents':[],'container':[],'upload_data':[],has_dated:{},has_distributed:{},changed:false,'download_data':{}};
+	   	    this.state={'contents':[],'container':[],'upload_data':[],has_dated:{},has_distributed:{},changed:false,'download_data':{},visible:false};
 	   	    this.upload_data={};
 	   	    this.get_data=4;  // 刊数  需要请求后端
 	   	    for(let l=1;l<this.get_data+1;l++){
@@ -493,55 +490,81 @@ class HasNotDate extends Component{
 	   	    this.data;
 
 	   	    this.changed=false;
+
+	   	    this.int;
+	   	    this.allow='';
 	   	    //this.state.has_distributed=this.has_distributed;
 	   	    // this.state.has_distributed={1:3,2:8,3:19,4:9};
 	    }
+	    Pass(e){
+	    	this.allow=true;
+	    	//alert('Ok')
+	    	this.setState({visible:false,});
+	    	this.Upload()
+	    	//this.allow=true;
+	    }
+	    Cancel(e){
+	    	this.allow=false;
+	    	//alert('Cancel')
+	    	this.setState({visible:false,});
+	    	//this.allow=false;
+	    }
+    	Upload(){
+		    	if(this.allow==true){
+		    		//this.allow='';
+			    	//this.state.has_dated=this.props.has_dated;
+			    	//this.has_dated = JSON.parse(JSON.stringify(this.state.has_dated));
+			    	for(let l in this.props.has_dated){
+			    		//alert('9829u28uchewouhew')
+			    		this.has_dated[l]={}
+			    		this.has_dated[l]['state']=this.props.has_dated[l]['state'].toString();
+			    	}
+			    	// console.log(value);
+			    	//console.log('pre:  '+e.target);
+			    	let key=this.value['key'];
+			    	key=(key-key%1000)/1000;
+			    	let label=this.value['label']; 
+			    	// label.replace(/[&nbsp;]*/g,'');
+			    	//alert(key);
+			    	let pat=/\d+/i;
+			    	let pre=0;
+			    	label=pat.exec(label)[0];
+			    	// console.log(label);
 
+			    	if(this.upload_data[key]==undefined){
+			    		this.upload_data[key]={};
+			    	}
+			    	//alert(key)
+			    	//console.log(this.has_dated);
+			    	this.upload_data[key]['刊数']=label;
+			    	this.upload_data[key]['姓名']=this.props.has_dated[key+1]['data'][0];
+			    	this.upload_data[key]['稿件名']=this.props.has_dated[key+1]['data'][1];
+			    	if(this.props.has_dated[key+1]['state']==false){
+			    		this.props.has_dated[key+1]['state']==1;
+			    		
+			    		//alert(this.has_dated[key+1]['state']);
+			    		this.has_dated[key+1]['state']==label;
+			    		//this.setState({'has_dated':this.state.has_dated})
+			    		//alert('ckjdsnclkds');
+			    		//alert(this.has_dated[key+1]['state']);
+			    		
+			    		//console.log(this.has_dated);
+			    		this.props.change_the_other_date_component(key+1,label);
+			    	}
+			    	//this.setState({'has_dated':this.state.has_dated});
+			    	//this.setState({'has_dated':this.props.has_dated});
+		    		alert('pass')
+		    		console.log(this.upload_data); // 稿件排期上传点
+		    	}
+    	}
 	    onChange2(value,e){
-	    	//this.state.has_dated=this.props.has_dated;
-	    	//this.has_dated = JSON.parse(JSON.stringify(this.state.has_dated));
-	    	for(let l in this.props.has_dated){
-	    		//alert('9829u28uchewouhew')
-	    		this.has_dated[l]={}
-	    		this.has_dated[l]['state']=this.props.has_dated[l]['state'].toString();
-	    	}
-	    	// console.log(value);
-	    	//console.log('pre:  '+e.target);
-	    	let key=value['key'];
-	    	key=(key-key%1000)/1000;
-	    	let label=value['label']; 
-	    	// label.replace(/[&nbsp;]*/g,'');
-	    	//alert(key);
-	    	let pat=/\d+/i;
-	    	let pre=0;
-	    	label=pat.exec(label)[0];
-	    	// console.log(label);
-
-	    	if(this.upload_data[key]==undefined){
-	    		this.upload_data[key]={};
-	    	}
-	    	//alert(key)
-	    	console.log(this.has_dated);
-	    	this.upload_data[key]['刊数']=label;
-	    	this.upload_data[key]['姓名']=this.props.has_dated[key+1]['data'][0];
-	    	this.upload_data[key]['稿件名']=this.props.has_dated[key+1]['data'][1];
-	    	if(this.props.has_dated[key+1]['state']==false){
-	    		this.props.has_dated[key+1]['state']==1;
-	    		
-	    		//alert(this.has_dated[key+1]['state']);
-	    		this.has_dated[key+1]['state']==label;
-	    		//this.setState({'has_dated':this.state.has_dated})
-	    		//alert('ckjdsnclkds');
-	    		//alert(this.has_dated[key+1]['state']);
-	    		
-	    		console.log(this.has_dated);
-	    		this.props.change_the_other_date_component(key+1,label);
-	    	}
-	    	//this.setState({'has_dated':this.state.has_dated});
-	    	//this.setState({'has_dated':this.props.has_dated});
-	    	
-	    	console.log(this.upload_data); // 稿件排期上传点
-	    	
+	    	this.setState({visible:true,});
+	    	//alert('');
+	    	this.value=value;
+	    	this.e=e;
+	    	//setInterval('do(value,e,this)',100);
+	    	this.allow='';
+	    	//this.Upload(value,e,this);
 	    }
  		render(){
 			let that=this;
@@ -574,8 +597,8 @@ class HasNotDate extends Component{
 					}
 					*/
 				}
-				console.log('out!!!!!!!');
-				console.log(this.state.has_distributed);
+				// console.log('out!!!!!!!');
+				// console.log(this.state.has_distributed);
 				//alert(this.state.contents);
 		        //console.log(this.props.has_dated);
 			let columns = [{
@@ -640,6 +663,9 @@ class HasNotDate extends Component{
 			return(
 				    <div class='white-back'>
 				          <Table columns={this.columns} dataSource={this.data} />	
+				          <Modal title='Warning' visible={this.state.visible} onOk={this.Pass.bind(this)} onCancel={this.Cancel.bind(this)}>
+				          <p>提交之后就不能更改了哦。</p>
+				          </Modal>
 				          <p style={{fontSize:'20px',marginTop:'20px',marginLeft:'10px'}}>注: <span style={{'color':'red'}}>标红</span>数字为已分配稿件数量</p>
 				    </div>
 				)

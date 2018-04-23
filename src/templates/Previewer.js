@@ -167,8 +167,6 @@ class Aside extends Component{
 					<MenuItemGroup key="i1" title={<span><Icon type="bars" /><span>功能菜单</span></span>}>
 						<Menu.Item key="Check_paper"><Icon type="pie-chart" />&nbsp;稿件审理</Menu.Item>
 						<Menu.Item key="Re_check_paper"><Icon type="calendar" />&nbsp;稿件重审</Menu.Item>
-					</MenuItemGroup>
-					<MenuItemGroup key="i2" title={<span><Icon type="user" /><span>个人设置</span></span>}>
 						<Menu.Item key="Personal_info_change"> <Icon type="user-add" />&nbsp;个人信息修改</Menu.Item>
 					</MenuItemGroup>
 				</Menu>			   
