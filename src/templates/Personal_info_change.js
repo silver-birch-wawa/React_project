@@ -18,6 +18,31 @@ function isEmptyObject(obj){
     return true; 
 } 
 
+function ajax_get(url,that){
+	axios.get(url)
+		  .then(function (response) {
+		  	let data=response.data;
+		  	console.log(data);
+		  	that.state.data=data;
+		    that.setState({'data':data});
+	}.bind(that))
+		.catch(function (error) {
+		    console.log(error);
+		  	alert('下载失败');
+	});
+}
+
+function ajax_post(url,data){
+	axios.post(url,data)
+	  .then(function (response) {
+	    console.log(response);
+	  })
+	  .catch(function (error) {
+	    console.log(error);
+	    alert('上传失败');
+	});
+}
+
 class Container extends Component{
    constructor(props){
    	 super(props);
@@ -27,10 +52,14 @@ class Container extends Component{
    	 	'主编':[],
    	 	'审稿人':[],
    	 	'读者':[],
-   	 	'编辑':[]
+   	 	'编辑':[],
+   	 	'data':''
    	     };   	 
    	 this.Personal_info={};
    	 this.Personal_info={'姓名':'qqqq','个人介绍':'jlqjlqdjlldjlj','性别':'女','密码':'198108310283101','联系方式':'189192121','办公室电话':'1979829382','研究方向':['内科','妇科'],'收寄地址':'成都','所在地邮编':'32323232','所在地中文名':'是继续开始进行筛选','所在地英文名':'kewhukwncwncdwc'};	
+   	 this.url='';
+   	 ajax_get(this.url,this);
+   	 
    	 this.upload={};
    	 this.icon={}
    	 this.icon['密码']=<img class='img-icon' src={require('../img/passwd.png')}/>
@@ -151,6 +180,7 @@ class Container extends Component{
 				  	else{
 				  		return(
 								  <div class='form-section'>
+								  	<author style={{display:'none'}}>UESTC-WQ</author>
 								    {this.icon[item]}
 								    <p>研究方向：&nbsp;</p>
 								      <Select

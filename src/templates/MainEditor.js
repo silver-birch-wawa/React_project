@@ -68,6 +68,7 @@ class Header extends Component{
     render(){
 		    return(
 		      <header className='header'>
+		        <author style={{display:'none'}}>UESTC-WQ</author>
 		        <title>主编页面</title>
 		        <logo><img src={this.state.logo_img} style={{width:'100%'}}></img></logo>
 		        <headtitle style={{fontSize:'1rem'}}>{this.state.Title}</headtitle>
@@ -175,6 +176,8 @@ class Aside extends Component{
 						<Menu.Item key="distributePaper"><Icon type="pie-chart" />&nbsp;稿件分配</Menu.Item>
 						<Menu.Item key="timetable"><Icon type="calendar" />&nbsp;稿件排期</Menu.Item>
 						<Menu.Item key="paper-status"><Icon type="clock-circle-o" />&nbsp;稿件状态</Menu.Item>
+						<Menu.Item key="EditorWorkLoad"><Icon type="line-chart" />&nbsp;编辑工作量</Menu.Item>
+						<Menu.Item key="PreviewerWorkLoad"><Icon type="laptop" />&nbsp;审稿人工作量</Menu.Item>
 						<Menu.Item key="Personal_info_change"> <Icon type="user-add" />&nbsp;个人信息修改</Menu.Item>
 					</MenuItemGroup>
 				</Menu>			   
@@ -301,8 +304,6 @@ class HasNotDistributed extends Component{
       	  //this.setState({'contents':this.contents});
       }      
 	}
-
-
    // 调用该函数使两个相邻组件更新一致
    change_the_other_component(){
    	  this.props.change_the_other_component();
@@ -341,7 +342,7 @@ class HasNotDistributed extends Component{
 			  title: '负责编辑',
 			  dataIndex: 'editor',
 			  key: 'editor',
-			}];
+			},];
 			let data=[];
 
 		    //this.contents=Object.assign([],this.props.content[1]);
@@ -360,9 +361,8 @@ class HasNotDistributed extends Component{
 					temp['key']=index;
 					temp['name']=item[1];
 					temp['paperName']=item[2];
-					temp['editor']=
-					                  <Select id={{index}} onChange={this.handleChange.bind(this)} style={{width:'100%'}} labelInValue defaultValue={{key:this.state.none}}>
-									 	      {this.editors.map((item,i)=>{ return (<Option value={index*10000+i} style={{width:'100%'}}  id={index}>{item}</Option>)})}
+					temp['editor']=  <Select id={{index}} onChange={this.handleChange.bind(this)} style={{width:'100%'}} labelInValue defaultValue={{key:this.state.none}}>
+									 	      {this.editors.map((item,i)=>{ return (<Option value={index*10000+i} style={{width:'100%'}}>{item}</Option>)})}
 									  </Select>
 									;
 					data.push(temp);
@@ -424,6 +424,10 @@ class Paper_status extends Component{
 			  title: '负责编辑',
 			  dataIndex: 'editor',
 			  key: 'editor',
+			},{
+			  title: '栏目',
+			  dataIndex: 'lanmu',
+			  key: 'lanmu',
 			}];
 			let data=[];
 
@@ -474,7 +478,7 @@ class HasNotDate extends Component{
 	   	    // download_data 已安排稿件对应刊数，has_distributed 各刊数对应已分配稿件数量
 	   	    // 表格从1开始,下拉菜单从0开始
 	   	    // 
-	   	    this.state={'contents':[],'container':[],'upload_data':[],has_dated:{},has_distributed:{},changed:false,'download_data':{},visible:false};
+	   	    this.state={'contents':[],'container':[],'upload_data':[],has_dated:{},has_distributed:{},changed:false,'download_data':{},visible:false,'none':''};
 	   	    this.upload_data={};
 	   	    this.get_data=4;  // 刊数  需要请求后端
 	   	    for(let l=1;l<this.get_data+1;l++){
@@ -491,8 +495,8 @@ class HasNotDate extends Component{
 
 	   	    this.changed=false;
 
-	   	    this.int;
-	   	    this.allow='';
+	   	    this.key='';
+	   	    this.label='';
 	   	    //this.state.has_distributed=this.has_distributed;
 	   	    // this.state.has_distributed={1:3,2:8,3:19,4:9};
 	    }
@@ -500,7 +504,9 @@ class HasNotDate extends Component{
 	    	this.allow=true;
 	    	//alert('Ok')
 	    	this.setState({visible:false,});
-	    	this.Upload()
+	    	this.props.change_the_other_date_component(this.key,this.label);
+	    	//this.Upload()
+	    	console.log(this.upload_data[this.key]);
 	    	//this.allow=true;
 	    }
 	    Cancel(e){
@@ -509,62 +515,74 @@ class HasNotDate extends Component{
 	    	this.setState({visible:false,});
 	    	//this.allow=false;
 	    }
-    	Upload(){
-		    	if(this.allow==true){
-		    		//this.allow='';
-			    	//this.state.has_dated=this.props.has_dated;
-			    	//this.has_dated = JSON.parse(JSON.stringify(this.state.has_dated));
-			    	for(let l in this.props.has_dated){
-			    		//alert('9829u28uchewouhew')
-			    		this.has_dated[l]={}
-			    		this.has_dated[l]['state']=this.props.has_dated[l]['state'].toString();
-			    	}
-			    	// console.log(value);
-			    	//console.log('pre:  '+e.target);
-			    	let key=this.value['key'];
-			    	key=(key-key%1000)/1000;
-			    	let label=this.value['label']; 
-			    	// label.replace(/[&nbsp;]*/g,'');
-			    	//alert(key);
-			    	let pat=/\d+/i;
-			    	let pre=0;
-			    	label=pat.exec(label)[0];
-			    	// console.log(label);
+	    handleChange(value,e) {
+		      this.contents=this.state.contents;
+		      let key=(value['key']-(value['key']%10000))/10000;
+		      //key+=1;
+		      console.log(value)
+		      console.log(key)    
+		      let lanmu=value['label']
+		      if(this.upload_data[key]==undefined){
+		    		this.upload_data[key]={};
+			    	this.upload_data[key]['姓名']=this.props.has_dated[key]['data'][0];
+			    	this.upload_data[key]['稿件名']=this.props.has_dated[key]['data'][1];
+		      }
+		      this.upload_data[key]['栏目']=lanmu;
 
-			    	if(this.upload_data[key]==undefined){
-			    		this.upload_data[key]={};
-			    	}
-			    	//alert(key)
-			    	//console.log(this.has_dated);
-			    	this.upload_data[key]['刊数']=label;
-			    	this.upload_data[key]['姓名']=this.props.has_dated[key+1]['data'][0];
-			    	this.upload_data[key]['稿件名']=this.props.has_dated[key+1]['data'][1];
-			    	if(this.props.has_dated[key+1]['state']==false){
-			    		this.props.has_dated[key+1]['state']==1;
-			    		
-			    		//alert(this.has_dated[key+1]['state']);
-			    		this.has_dated[key+1]['state']==label;
-			    		//this.setState({'has_dated':this.state.has_dated})
-			    		//alert('ckjdsnclkds');
-			    		//alert(this.has_dated[key+1]['state']);
-			    		
-			    		//console.log(this.has_dated);
-			    		this.props.change_the_other_date_component(key+1,label);
-			    	}
-			    	//this.setState({'has_dated':this.state.has_dated});
-			    	//this.setState({'has_dated':this.props.has_dated});
-		    		alert('pass')
-		    		console.log(this.upload_data); // 稿件排期上传点
-		    	}
-    	}
+	    	  if(this.upload_data[key]['刊数']!=undefined){
+	    			this.setState({visible:true,});
+	    			this.key=key;
+	    			this.label=this.upload_data[key]['刊数'];
+	    	  }
+		      console.log(this.upload_data);
+		}
 	    onChange2(value,e){
-	    	this.setState({visible:true,});
-	    	//alert('');
-	    	this.value=value;
-	    	this.e=e;
-	    	//setInterval('do(value,e,this)',100);
-	    	this.allow='';
-	    	//this.Upload(value,e,this);
+	    	for(let l in this.props.has_dated){
+	    		//alert('9829u28uchewouhew')
+	    		this.has_dated[l]={}
+	    		this.has_dated[l]['state']=this.props.has_dated[l]['state'];
+	    	}
+	    	//console.log(value);
+	    	//console.log('pre:  '+e.target);
+	    	let key=value['key'];
+	    	key=(key-key%1000)/1000;
+	    	key+=1;
+	    	let label=value['label']; 
+	    	// label.replace(/[&nbsp;]*/g,'');
+	    	//alert(key);
+	    	let pat=/\d+/i;
+	    	let pre=0;
+	    	label=pat.exec(label)[0];
+	    	// console.log(label);
+
+	    	if(this.upload_data[key]==undefined){
+	    		this.upload_data[key]={};
+	    	}
+	    	alert(key)
+	    	//console.log(this.has_dated);
+	    	console.log(this.props.has_dated)
+	    	this.upload_data[key]['刊数']=label;
+	    	this.upload_data[key]['姓名']=this.props.has_dated[key]['data'][0];
+	    	this.upload_data[key]['稿件名']=this.props.has_dated[key]['data'][1];
+	    	if(this.props.has_dated[key]['state']==false){
+	    		this.props.has_dated[key]['state']==1;
+	    		
+	    		//alert(this.has_dated[key+1]['state']);
+	    		this.has_dated[key]['state']==label;
+	    		//this.setState({'has_dated':this.state.has_dated})
+	    		//alert('ckjdsnclkds');
+	    		//alert(this.has_dated[key+1]['state']);
+	    		
+	    		//console.log(this.has_dated);
+	    		if(this.upload_data[key]['栏目']!=undefined){
+	    			this.setState({visible:true,});
+	    			this.key=key;
+	    			this.label=this.upload_data[key]['刊数'];
+	    		}
+	    	}
+	    	//this.setState({'has_dated':this.state.has_dated});
+	    	//this.setState({'has_dated':this.props.has_dated});
+    		console.log(this.upload_data); // 稿件排期上传点
 	    }
  		render(){
 			let that=this;
@@ -618,7 +636,11 @@ class HasNotDate extends Component{
 			  title: '排期',
 			  dataIndex: 'timetable',
 			  key: 'timetable',
-			}];
+			},{
+			  title: '栏目',
+			  dataIndex: 'lanmu',
+			  key: 'lanmu',
+			},];
 			let data=[];
 			console.log(this.props.has_dated);
 		    for(let i in this.props.has_dated){
@@ -648,12 +670,12 @@ class HasNotDate extends Component{
 													    })(that,i)
 												    }
 											    </Select>;
+									Temp['lanmu']=<Select onChange={this.handleChange.bind(this)} style={{width:'100%'}} labelInValue defaultValue={{key:this.state.none}}>
+									 	      			{this.props.lanmu.map((item,int)=>{ return (<Option value={i*10000+int} style={{width:'100%'}}>{item}</Option>)})}
+									  			  </Select>;
 									data.push(Temp);
 				                          }
-				                    }
-			        	                                                
-			        	    
-
+				                    }			        	                                                
 	                    }
 	                        //console.log(this.data);
         	             	this.data=data;
@@ -669,7 +691,7 @@ class HasNotDate extends Component{
 				          <p style={{fontSize:'20px',marginTop:'20px',marginLeft:'10px'}}>注: <span style={{'color':'red'}}>标红</span>数字为已分配稿件数量</p>
 				    </div>
 				)
-	        }
+	         }
 }
 class HasDate extends Component{
 		constructor(props){
@@ -798,6 +820,143 @@ class HasDate extends Component{
 				)
 	        }
 }
+// 年度1、季度4、月度12
+class EditorWorkLoad extends Component{
+	constructor(props){
+		super(props);
+		this.Option=[];
+		this.state={'年度':1,'季度':4,'月度':12,'value':1,'time':1,'contents':{'Editor1':12,'Editor2':43,'Editor3':19}}
+    }
+    handleChange(value){
+    	console.log(value); //月度
+    	this.setState({'value':value});
+    }
+    handleChange1(value){
+    	console.log(value); //123456
+    	this.setState({'time':value})
+    }
+    render(){
+		let columns = [{
+		  title: '姓名',
+		  dataIndex: 'name',
+		  key: 'name',
+		}, {
+		  title: '工作量',
+		  dataIndex: 'load',
+		  key: 'load',
+		}];
+
+		let dataSource = [{
+		  key: '1',
+		  name: '胡彦斌',
+		}, {
+		  key: '2',
+		  name: '胡彦祖',
+		},];
+		dataSource=[];
+
+    	return(
+			<div class='white-back' style={{fontSize:'20px'}}>
+				统计方法:&nbsp;&nbsp;
+			    <Select defaultValue="" style={{ width: 120 }} onChange={this.handleChange.bind(this)}>
+			      <Option value="年度">年度</Option>
+			      <Option value="季度">季度</Option>
+			      <Option value="月度">月度</Option>
+			    </Select>
+			    &nbsp;时间段:&nbsp;&nbsp;
+			    <Select defaultValue="" style={{ width: 120 }} onChange={this.handleChange1.bind(this)}>
+			    	{
+			    		(function (rows, i, len) {
+						        while (++i<len) {
+						         rows.push(<Option value={i}>{i}</Option>);
+						        }
+						        return rows;
+						})([],0,this.state[this.state.value]+1)
+						
+			    	}
+			    </Select>			
+			    {
+		    		(function (dataSource,that){
+		    			for(let l in that.state.contents){
+		    				//alert(l)
+		 			        //return rows;
+		    			   		}
+						}
+					)(dataSource,this)		    
+			    } 
+			    <Table style={{marginTop:'10px'}}  dataSource={dataSource} columns={columns} />	
+		    </div>
+    		);
+    }
+}
+class PreviewerWorkLoad extends Component{
+	constructor(props){
+		super(props);
+		this.Option=[];
+		this.state={'年度':1,'季度':4,'月度':12,'value':1,'time':1,'contents':{'Editor1':12,'Editor2':43,'Editor3':19}}
+    }
+    handleChange(value){
+    	console.log(value); //月度
+    	this.setState({'value':value});
+    }
+    handleChange1(value){
+    	console.log(value); //123456
+    	this.setState({'time':value})
+    }
+    render(){
+		let columns = [{
+		  title: '姓名',
+		  dataIndex: 'name',
+		  key: 'name',
+		}, {
+		  title: '工作量',
+		  dataIndex: 'load',
+		  key: 'load',
+		}];
+
+		let dataSource = [{
+		  key: '1',
+		  name: '胡彦斌',
+		}, {
+		  key: '2',
+		  name: '胡彦祖',
+		},];
+		dataSource=[];
+
+    	return(
+			<div class='white-back' style={{fontSize:'20px'}}>
+				统计方法:&nbsp;&nbsp;
+			    <Select defaultValue="" style={{ width: 120 }} onChange={this.handleChange.bind(this)}>
+			      <Option value="年度">年度</Option>
+			      <Option value="季度">季度</Option>
+			      <Option value="月度">月度</Option>
+			    </Select>
+			    &nbsp;时间段:&nbsp;&nbsp;
+			    <Select defaultValue="" style={{ width: 120 }} onChange={this.handleChange1.bind(this)}>
+			    	{
+			    		(function (rows, i, len) {
+						        while (++i<len) {
+						         rows.push(<Option value={i}>{i}</Option>);
+						        }
+						        return rows;
+						})([],0,this.state[this.state.value]+1)
+						
+			    	}
+			    </Select>			
+			    {
+		    		(function (dataSource,that){
+		    			for(let l in that.state.contents){
+		    				//alert(l)
+		 			        //return rows;
+		    			   		}
+						}
+					)(dataSource,this)		    
+			    } 
+			    <Table style={{marginTop:'10px'}}  dataSource={dataSource} columns={columns} />	
+		    </div>
+    		);
+    }
+}
 class Main extends Component{
    static defaultProps = {
       content:["":[['','','','']]]
@@ -808,10 +967,10 @@ class Main extends Component{
    	 this.status_code={1:'未分配',2:'审阅中',3:'未通过',4:'待修改',5:'通过',6:'格式确认' ,7:'已缴费'};
    	 this.td_width=['3rem','3rem','9rem','3rem'];
    	 this.title=['状态','作者名','稿件名','负责编辑'];
-   	 this.state={'contents':[],'changed':true,'has_dated':{}};
+   	 this.state={'contents':[],'changed':true,'has_dated':{},'lanmu':[]};
    	 this.test=1;
-
    	 // has_dated 记录所有数据及状态
+   	 this.state.lanmu=['妇科','烧伤科','儿科'];
    }
    get_dated(){
    		if(this.test!=1){
@@ -882,7 +1041,7 @@ class Main extends Component{
 			        						<main>
 			        							<div class='white-back'>
 			        								<Tabs defaultActiveKey="1">
-												      <TabPane tab="未排期" key="1"><HasNotDate content={this.state.contents} has_dated={this.state.has_dated} change_the_other_date_component={this.change_the_other_date_component.bind(this)}/></TabPane>
+												      <TabPane tab="未排期" key="1"><HasNotDate content={this.state.contents} lanmu={this.state.lanmu} has_dated={this.state.has_dated} change_the_other_date_component={this.change_the_other_date_component.bind(this)}/></TabPane>
 												      <TabPane tab="已排期" key="2"><HasDate content={this.state.contents} has_dated={this.state.has_dated} key={Math.random()}/></TabPane>
 												    </Tabs>
 			        							</div>
@@ -901,6 +1060,20 @@ class Main extends Component{
 			        							</iframe>
 			        						</div>
 			        	);
+			        case "EditorWorkLoad":return(
+			        							<main>
+			        								<div class='white-back'>
+			        									<EditorWorkLoad content={this.props.content}/>
+			        								</div>
+			        							</main>
+			        							);
+			        case "PreviewerWorkLoad":return(
+			        							<main>
+			        								<div class='white-back'>
+			        									<PreviewerWorkLoad content={this.props.content}/>
+			        								</div>
+			        							</main>
+			        							);
 			        default:return null;
 			    }
 		}

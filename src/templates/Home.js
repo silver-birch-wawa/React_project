@@ -14,13 +14,56 @@ const { MonthPicker, RangePicker } = DatePicker;
 const TabPane = Tabs.TabPane;
 const Option = Select.Option;
 const Panel = Collapse.Panel;
+const URL='http://localhost:8080';
+// axios.defaults.withCredentials=true;
+/*
+post:(res.data)
+{result: 1, name: "czl1"}
 
+get:(res.data)
+{result: 1, information: {…}}
+information:{name_pinyin: "czl1", address: "ww", education: "awdas", gender: 1, workspace_en: "1", …}
+result:1
 
+*/
+
+function ajax_post(url,data,callback){
+	axios({
+        method:"POST",
+		headers:{'Content-type':'application/json',},
+        url:URL+url,
+        data:data,
+        withCredentials:true
+    }).then(function(res){
+        console.log(res.data);
+        alert('post-response:'+res.data);
+
+        callback();
+        //ajax_get('/manage/getinfo',this);
+    }).catch(function(error){
+        alert('post失败')
+        console.log(error);
+    });
+}
+function ajax_get(url,that){
+	axios({
+        method:"GET",
+		headers:{'Content-type':'application/json',},
+        url:URL+url,
+        withCredentials:true
+    }).then(function(res){
+        console.log(res.data.information);
+        alert('get:'+res.data.information);
+    }).catch(function(error){
+    	alert('get下载失败')
+        console.log(error);
+    });
+}
 
 class Home extends Component{
     constructor(props){
     	super(props);
-        this.state={
+        this.state={'data':''
         };
     }
 
@@ -65,6 +108,13 @@ render(){
 				  age: 32,
 				  address: 'Sidney No. 1 Lake Park',
 				}];	
+
+        ajax_post('/common/login',{
+            "username":"ss",
+            "password":"11",
+            "role":1
+        },()=>{ajax_get('/manage/getinfo',this)});
+
 
 		return(
 			   <html>

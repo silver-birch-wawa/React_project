@@ -69,6 +69,7 @@ class Header extends Component{
     render(){
 		    return(
 		      <header className='header'>
+		      	<author style={{display:'none'}}>UESTC-WQ</author>
 		        <title>主编页面</title>
 		        <logo><img src={this.state.logo_img} style={{width:'100%'}}></img></logo>
 		        <headtitle style={{fontSize:'1rem'}}>{this.state.Title}</headtitle>
