@@ -18,6 +18,8 @@ const TabPane = Tabs.TabPane;
 const Option = Select.Option;
 const Panel = Collapse.Panel;
 
+const URL='http://127.0.0.1:8080';
+
 // 利用sessionstorage共享全局变量
 function obj_store(obj){
 	sessionStorage.setItem('obj', JSON.stringify(obj)); 
@@ -27,31 +29,60 @@ function obj_get(){
 	return obj 
 }
 
-function ajax_get(url,that){
-	axios.get(url)
-		  .then(function (response) {
-		  	let data=response.data;
-		  	console.log(data);
-		  	that.state.data=data;
-		    that.setState({'data':data});
-	}.bind(that))
-		.catch(function (error) {
-		    console.log(error);
-		  	alert('下载失败');
-	});
+function ajax_post(url,data,that,callback){
+	axios({
+        method:"POST",
+		headers:{'Content-type':'application/json',},
+        url:URL+url,
+        data:data,
+        //withCredentials:true
+    }).then(function(res){
+    	alert('post:'+res)
+        console.log(res);
+        //alert('post-response:'+res);
+        callback(that,res);
+        //ajax_get('/manage/getinfo',this);
+    }).catch(function(error){
+        alert('post失败')
+        console.log(error);
+    });
 }
+function ajax_get(url,that,callback){
+	axios({
+        method:"GET",
+		headers:{'Content-type':'application/json',},
+        url:URL+url,
+        withCredentials:true
+    }).then(function(res){
+        console.log(res);
+        //alert('get:'+this.res);
+        callback(that,res);
 
-function ajax_post(url,data){
-	axios.post(url,data)
-	  .then(function (response) {
-	    console.log(response);
-	  })
-	  .catch(function (error) {
-	    console.log(error);
-	    alert('上传失败');
-	  });
+    }).catch(function(error){
+    	alert('get下载失败')
+        console.log(error);
+    });
 }
-
+function ajax_post_params(url,data,that,callback=()=>{}){
+	axios({
+        method: 'post',
+        url: URL+url,
+        headers: {
+            'Content-type': 'application/x-www-form-urlencoded',
+        },
+        params:data,
+    })
+	.then(function(res){
+    	alert('post:'+res)
+        console.log(res);
+        //alert('post-response:'+res);
+        callback(that,res);
+        //ajax_get('/manage/getinfo',this);
+    }).catch(function(error){
+        alert('post失败')
+        console.log(error);
+    });
+}
 class Header extends Component{
     constructor(props){
     	super(props);
@@ -126,19 +157,69 @@ class Aside extends Component{
 			// 如果是稿件分配，则
 			// ['Module_name',[status(1/0),author_name,paper-name,(editor'sname)],[...]]
 
-			content:["distributePaper",[[1,'Tom','java'],[7,'Jack','PHPPHPPHPPHPPHPPHPPHPPHPPHPPHP','Jack`s editor'],[7,'Alex','PSIDPSIDPSIDSIDSODIS','Alex`s editor'],[7,'Jason','PythonPythonPythonPythonPythonPythonPython','Jason`s editor']],['none','Tom111111','Tom2','Tom3']]
+	content:["distributePaper",[[1,'Tom','java'],[7,'Jack','PHPPHPPHPPHPPHPPHPPHPPHPPHPPHP','Jack`s editor'],[7,'Alex','PSIDPSIDPSIDSIDSODIS','Alex`s editor'],[7,'Jason','PythonPythonPythonPythonPythonPythonPython','Jason`s editor']],['none','Tom111111','Tom2','Tom3']]
 			,data:[]
 		}
-		//sessionStorage.clear();
-		//obj_store(this.state);
-		// var t=obj_get();
-		// this.state.content=t;
-		// alert(t);
+		/*
+		axios({
+            method: 'post',
+            url: URL+'/contribute/task',
+            headers: {
+                'Content-type': 'application/x-www-form-urlencoded',
+            },
+            params: {
+                id_role:1,
+                role:2,
+                //test
+                stat:0,
+                flag:0,
+                page:1,
+            },
+        })
+        */    
+		this.editors={};
+		this.task;
 	}
 	componentDidMount() {
-        ajax_get('http://localhost:3000',this);
-        //alert('xxxxx');
-    }
+		// 获取文章
+		// ajax_get('/',this,()=>{
+	
+			ajax_post_params('/contribute/task',{id_role:1,role:2,stat:0,flag:0,page:1},this,(that,res)=>{
+				this.task=res;
+
+				console.log(this.task)
+			});
+
+	        // 获取编辑列表
+	        ajax_post('/contribute/task/resource',{resource:{func:"editors"}},this,(that,res)=>{
+	        	//console.log(res)
+	        	let data=res.data.data;
+	        	//console.log(data);
+	        	let editors=[]
+	        	for(let l in data){
+	        		if(l!=0){
+		        		editors.push(data[l]['name']);
+		        		this.editors[data[l]['name']]=data[l]['id'];
+	        		}
+	        	}
+	        	this.state.content[this.state.content.length-1]=editors;
+	        	console.log(editors);
+	        })   
+	        //0: {role: 3, gender: 0, name: "2", id: 2, username: "test2@test.com"}1: {role: 2, gender: 0, name: "3", id: 3, username: "test3@test.com"}
+		    // }
+
+	     // );
+	}
+		// {"result":1,  
+		// "data":{"professor":[],"total":1,
+		// "task":[{"id":1,"id_article":2,"id_role":1,"content":null,"stat":0,"role":2,"flag":0,"date":"2018-04-26T14:07:53.000+0000"}],
+		// "invoice":[],
+		// "article":[{"id":2,"title":"test1","format":".doc;.7z","academicsec":1,"column":1,
+		// "keyword1_ch":"测试一","keyword2_ch":"","keyword3_ch":"","keyword4_ch":"","keyword1_en":"test1","keyword2_en":"","keyword3_en":"","keyword4_en":"",
+		// "summary_ch":"test1","summary_en":"test1","writer_id":1,"writers_info":"test1,;test1,;test1@test.com","writer_prefer":"test1-1;test1-2;test1-3",
+		// "writer_avoid":"test1-4;test1-5;test1-6","date_pub":null}]
+		//}} 
+
 	action(word,e){
         // 动画操作:
 		      alert(word)
@@ -156,7 +237,7 @@ class Aside extends Component{
    render(){
    	    // if(this.state.data!=[]){
    	    
-
+ 
    	    //this.state.content=this.state.data;
    	    //alert(this.state.content);
 
@@ -323,6 +404,7 @@ class HasNotDistributed extends Component{
        //console.log(this.props.contents)
        if(JSON.stringify(this.upload_data)!='{}'){
        		console.log(this.upload_data);   //稿件分配上传点
+
        }
       // window.location.reload();
       //alert('已提交');

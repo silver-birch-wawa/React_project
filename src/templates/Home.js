@@ -14,20 +14,9 @@ const { MonthPicker, RangePicker } = DatePicker;
 const TabPane = Tabs.TabPane;
 const Option = Select.Option;
 const Panel = Collapse.Panel;
-const URL='http://localhost:8080';
-// axios.defaults.withCredentials=true;
-/*
-post:(res.data)
-{result: 1, name: "czl1"}
+const URL='http://127.0.0.1:8080';
 
-get:(res.data)
-{result: 1, information: {…}}
-information:{name_pinyin: "czl1", address: "ww", education: "awdas", gender: 1, workspace_en: "1", …}
-result:1
-
-*/
-
-function ajax_post(url,data,callback){
+function ajax_post(url,data,that,callback){
 	axios({
         method:"POST",
 		headers:{'Content-type':'application/json',},
@@ -37,23 +26,24 @@ function ajax_post(url,data,callback){
     }).then(function(res){
         console.log(res.data);
         alert('post-response:'+res.data);
-
-        callback();
+        callback(that,res);
         //ajax_get('/manage/getinfo',this);
     }).catch(function(error){
         alert('post失败')
         console.log(error);
     });
 }
-function ajax_get(url,that){
+function ajax_get(url,that,callback){
 	axios({
         method:"GET",
 		headers:{'Content-type':'application/json',},
         url:URL+url,
         withCredentials:true
     }).then(function(res){
-        console.log(res.data.information);
-        alert('get:'+res.data.information);
+        console.log(res);
+        //alert('get:'+this.res);
+        callback(that,res);
+
     }).catch(function(error){
     	alert('get下载失败')
         console.log(error);
@@ -108,13 +98,8 @@ render(){
 				  age: 32,
 				  address: 'Sidney No. 1 Lake Park',
 				}];	
-
-        ajax_post('/common/login',{
-            "username":"ss",
-            "password":"11",
-            "role":1
-        },()=>{ajax_get('/manage/getinfo',this)});
-
+        ajax_get('/common/geteducation',this,(that,res)=>{alert(res)});
+		        
 
 		return(
 			   <html>
