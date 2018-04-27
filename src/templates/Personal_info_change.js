@@ -245,6 +245,7 @@ class Container extends Component{
 	    	"role":1
 	     },()=>{ajax_get('/manage/getinfo',this,)});
 	*/
+	if(this.state.education[0]!=undefined&&this.state.academicsec[0]!=undefined){
 		 return(
 		 	<html style={{paddingLeft:'90px'}}>
 				<middleForm>
@@ -315,7 +316,7 @@ class Container extends Component{
 									    labelInValue
 									    onChange={this.handlechange.bind(this,{item})}
 									  >
-									  {this.state.subjects.map((items,i)=>{return (<Option key={i} value={items}>{items}</Option>)})}
+									  {this.state.academicsec.map((items,i)=>{return (<Option key={i} value={items}>{items}</Option>)})}
 									  </Select>
 								  </div>
 				  		)}
@@ -334,7 +335,11 @@ class Container extends Component{
 				  </div>
 				</middleForm>
 			</html>
-		 ) 
+		 )
+	   }
+	   else{
+	   	return(<p>loading.....</p>);
+	   } 
 	}
 }
 class Personal_info_change extends Component{
