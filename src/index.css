@@ -223,9 +223,9 @@
         padding:0 1rem;
         height:3rem;
 	  }
-	  nav>ul{list-style: none;align-items: center;display:flex;margin-top: 1rem;}
-	  nav>ul>li{padding:1rem;}
-	  nav>ul a{text-decoration: none;color:black;align-items:center;display:flex;}
+	 .html nav>ul{list-style: none;align-items: center;display:flex;margin-top: 1rem;}
+	 .html nav>ul>li{padding:1rem;}
+	 .html nav>ul a{text-decoration: none;color:black;align-items:center;display:flex;}
 
     /* 主页 */
     container{

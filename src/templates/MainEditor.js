@@ -10,6 +10,7 @@ import { Input} from 'antd';
 import axios from 'axios';
 import { Badge } from 'antd';
 import {Menu} from  'antd';
+import Header from './Header';
 const MenuItemGroup = Menu.ItemGroup;
 
 const InputGroup = Input.Group;
@@ -83,48 +84,6 @@ function ajax_post_params(url,data,that,callback=()=>{}){
         console.log(error);
     });
 }
-class Header extends Component{
-    constructor(props){
-    	super(props);
-        this.state={
-        	'name':'xss',
-        	'Personal_info_change':'/#/Personal_info_change',
-        	'logo_img':'http://static.samsph.com/images/logo.png',
-        	'Title':'四川省人民医院编辑部'
-        };
-    }
-    logout(){
-
-    }
-    render(){
-		    return(
-		      <header className='header'>
-		        <author style={{display:'none'}}>UESTC-WQ</author>
-		        <title>主编页面</title>
-		        <logo><img src={this.state.logo_img} style={{width:'100%'}}></img></logo>
-		        <headtitle style={{fontSize:'1rem'}}>{this.state.Title}</headtitle>
-		        <nav>
-		       	  <ul>
-		       	  	<li style={{}}>
-		       	  		<p style={{fontSize:'0.7rem',marginTop:'0.5rem'}}><home><a href="/Home#/">Home</a></home></p>
-		       	  	</li>
-		       	  	<a href="#" style={{position:'relative',textAlign:'left',marginTop:'0.1rem'}}>
-			       	  	<Icon type="user" style={{color:'#337ab7',fontSize:'0.8rem'}}/>
-			       	  	<li style={{}}>
-			       	  		<name><p style={{fontSize:'0.6rem',marginTop:'0.5rem'}} onClick={this.logout}><a href={this.state.Personal_info_change} target="_blank">{this.state.name}</a></p></name>
-			       	  	</li>
-		       	  	</a>
-		       	  </ul>
-		        </nav>
-		      </header>
-		)
-    }
-}
-
-
-class Person extends Component{
-
-}
 
 class Container extends Component{
    constructor(props){
@@ -177,20 +136,70 @@ class Aside extends Component{
             },
         })
         */    
+
+        // stat后台比我多1
+
 		this.editors={};
+		//  editors姓名与id的键值
+
 		this.task;
+		// task表里的所有数据
+
+		this.authors={};
+		// id与autho	rs的名字的键值
 	}
 	componentDidMount() {
-		// 获取文章
-		// ajax_get('/',this,()=>{
-	
+	 		
+	 		// 跑通了
+	 		// {"result":1,"data":
+	 		// [{"name_pinyin":"ceshizuozheyi","education":3,"gender":0,"academicsec1":1,"alive":1,
+	 		// "workspace_en":"test1","academicsec3":null,"academicsec2":2,"title":"","password":"12234","major":1,
+	 		// "workspace_ch":"测试1","id":1,"researchdir":"医学","email":"11111@test.com","introduction":"测试1","address":"测试1","postcode":"100000",
+	 		// "safeque2":"2;测试1","safeque3":"3;测试1","phonenum":"12345678900","safeque1":"1;测试1","officetel":"123456","name":"测试作者一","location":1},
+	 		
+	 		// {"name_pinyin":"ceshizuozheer","education":5,"gender":0,"academicsec1":1,"alive":1,"workspace_en":"test2","academicsec3":2,"academicsec2":2,
+	 		// "title":"","password":"123456","major":1,"workspace_ch":"测试2","id":2,"researchdir":"医学","email":"22222@test.com",
+	 		// "introduction":"测试2","address":"测试2","postcode":"100000","safeque2":"2;测试2","safeque3":"3;测试2","phonenum":"12345678901",
+	 		// "safeque1":"1;测试2","officetel":"123457","name":"测试作者二","location":1},
+	 		
+	 		// {"name_pinyin":"ceshizuozhesan","education":4,"gender":1,"academicsec1":1,"alive":1,
+	 		// "workspace_en":"test","academicsec3":4,"academicsec2":3,"title":"","password":"123456","major":1,"workspace_ch":"测试3","id":3,"researchdir":"医学","email":"33333@test.com",
+	 		// "introduction":"测试3","address":"测试3","postcode":"100000","safeque2":"2;测试3","safeque3":"3;测试3","phonenum":"12345678902","safeque1":"1;测试3",
+	 		// "officetel":"123458","name":"测试作者三","location":1}]}
+			ajax_post('/contribute/task/resource',{resource:{func:"authors"}},this,(that,res)=>{
+				    //this.authors=res.data.data;
+					let authors=res.data.data;
+					for(let l in authors){
+						this.authors[l]=authors[l].name;
+					}
+					console.log(this.authors)			
+			})
+
+			// {"result":1,"data":
+			// {"standard":{"num":[20,20,20,20],"ddl":[1522511999000,1530374399000,1538323199000,1546271999000]},
+			// "schedule":[0,0,0,0],"editor":[],"total":1,
+			// "task":[{"id":1,"id_article":1,"id_role":1,"content":null,"stat":0,"role":2,"flag":0,"date":1524637974000}],
+			// "invoice":[],"article":[{"id":1,"title":"测试","format":".docx;.rar","academicsec":1,"column":1,
+			// "keyword1_ch":"测试","keyword2_ch":null,"keyword3_ch":null,"keyword4_ch":null,"keyword1_en":"test","keyword2_en":null,"keyword3_en":null,"keyword4_en":null,
+			// "summary_ch":"测试","summary_en":"test","writer_id":1,"writers_info":"","writer_prefer":null,"writer_avoid":null,"date_sub":1525314608000,"date_pub":null}]}}
 			ajax_post_params('/contribute/task',{id_role:1,role:2,stat:0,flag:0,page:1},this,(that,res)=>{
-				this.task=res;
+				let data=[]
+				this.task=res.data.data;
+				for(let l in this.task.task){
+					let bug=[]
+					bug.push(this.task.task[l]['stat']+1);
+					bug.push(this.authors[this.task.article[l]['writer_id']]);
+					bug.push(this.task.article[l]['title']);
+					data.push(bug);
+				}
+				this.state.content[1]=data;
+				console.log(this.task);
+			});					
 
-				console.log(this.task)
-			});
-
-	        // 获取编辑列表
+			// 跑通了
+			// {"result":1,"data":[{"role":0,"gender":0,"alive":1,"name":"主编","id":1,"username":"master"},
+			// {"role":1,"gender":0,"alive":1,"name":"编辑1","id":2,"username":"editor1"},
+			// {"role":1,"gender":0,"alive":1,"name":"编辑2","id":3,"username":"editor2"}]}
 	        ajax_post('/contribute/task/resource',{resource:{func:"editors"}},this,(that,res)=>{
 	        	//console.log(res)
 	        	let data=res.data.data;
@@ -205,20 +214,8 @@ class Aside extends Component{
 	        	this.state.content[this.state.content.length-1]=editors;
 	        	console.log(editors);
 	        })   
-	        //0: {role: 3, gender: 0, name: "2", id: 2, username: "test2@test.com"}1: {role: 2, gender: 0, name: "3", id: 3, username: "test3@test.com"}
-		    // }
 
-	     // );
 	}
-		// {"result":1,  
-		// "data":{"professor":[],"total":1,
-		// "task":[{"id":1,"id_article":2,"id_role":1,"content":null,"stat":0,"role":2,"flag":0,"date":"2018-04-26T14:07:53.000+0000"}],
-		// "invoice":[],
-		// "article":[{"id":2,"title":"test1","format":".doc;.7z","academicsec":1,"column":1,
-		// "keyword1_ch":"测试一","keyword2_ch":"","keyword3_ch":"","keyword4_ch":"","keyword1_en":"test1","keyword2_en":"","keyword3_en":"","keyword4_en":"",
-		// "summary_ch":"test1","summary_en":"test1","writer_id":1,"writers_info":"test1,;test1,;test1@test.com","writer_prefer":"test1-1;test1-2;test1-3",
-		// "writer_avoid":"test1-4;test1-5;test1-6","date_pub":null}]
-		//}} 
 
 	action(word,e){
         // 动画操作:
@@ -236,7 +233,7 @@ class Aside extends Component{
 
    render(){
    	    // if(this.state.data!=[]){
-   	    
+   	    console.log(this.state.content)
  
    	    //this.state.content=this.state.data;
    	    //alert(this.state.content);
@@ -391,8 +388,8 @@ class HasNotDistributed extends Component{
    }
    handleClick(e){
        this.contents=this.props.content[1].slice(0);
-       // console.log(contents);
-       // console.log(this.choosed_editors)
+       console.log(this.contents);
+       console.log(this.choosed_editors)
        for(let i in this.choosed_editors){
        	  this.upload_data[i]=this.contents[i].slice(1,);
        	  this.upload_data[i].push(this.choosed_editors[i]);
@@ -484,7 +481,6 @@ class Paper_status extends Component{
 		    	    //console.log(this.props.content[1])
 				    this.state.contents=this.props.content[1].slice(0);
 			   		this.editors=this.props.content[2];    
-			   		
 			}
 			this.state.contents=this.state.contents.sort(function(a,b){return a[0]-b[0]});
 
@@ -497,7 +493,6 @@ class Paper_status extends Component{
 			  title: '作者名',
 			  dataIndex: 'name',
 			  key: 'name',
-			  render: (text,record) => <a href="#">{record.name}</a>,
 			}, {
 			  title: '稿件名',
 			  dataIndex: 'paperName',
@@ -519,9 +514,10 @@ class Paper_status extends Component{
 
 		    if(this.state.contents!=undefined){
 		    	this.state.contents.map((item,index) => { 
+		    		console.log(item)
 		    		let Temp={};
 		    		console.log('target');
-		    		console.log(this.state.content);
+		    		//console.log(this.state.content);
 	                var temp=item[0];
 	                //console.log(item[0]);
 //	                item[0]=this.status_code[item[0]]?this.status_code[item[0]]:this.status_code[item[0]['key']];
@@ -532,11 +528,18 @@ class Paper_status extends Component{
 					Temp['status']=item[0];
 					Temp['key']=index;
 					Temp['name']=item[1];
+					//alert(Temp['name'])
 					Temp['paperName']=item[2];
 					Temp['editor']=item[3];
+
+					// if(item[2]==undefined){
+					// 	item[2]='undefined';
+					// }
+					if(item[3]==undefined){
+						item[3]='undefined';
+					}										
 					data.push(Temp);
-
-
+					console.log(data)
 	             	item[0]=temp;
 			            //alert('container_unfinished'+this.container_unfinished.length)  
 			    });
