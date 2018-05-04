@@ -38,8 +38,8 @@ function ajax_post(url,data,that,callback){
         data:data,
         //withCredentials:true
     }).then(function(res){
-    	alert('post:'+res)
-        console.log(res);
+    	//alert('post:'+res)
+        console.log('post:'+res);
         //alert('post-response:'+res);
         callback(that,res);
         //ajax_get('/manage/getinfo',this);
@@ -74,8 +74,8 @@ function ajax_post_params(url,data,that,callback=()=>{}){
         params:data,
     })
 	.then(function(res){
-    	alert('post:'+res)
-        console.log(res);
+    	//alert('post:'+res)
+        console.log('post:'+res);
         //alert('post-response:'+res);
         callback(that,res);
         //ajax_get('/manage/getinfo',this);
@@ -89,7 +89,8 @@ class Container extends Component{
    constructor(props){
    	    super(props);
    	    this.state={
-   	        'content':[]
+   	        'content':[],
+   	        'data':{}
         }
    }
 
@@ -99,11 +100,18 @@ class Container extends Component{
       this.setState({'content':content});
    }
 
+   change_distribute_content(data){
+   	    this.state.data=data;
+   	    console.log('105 $$$$$$$$$$$$$$$:')
+   	    console.log(data);
+   		this.setState({'data':data});
+   }
+
    render(){
    	return(
    	     <container>
-   	         <Aside change_content={this.change_content.bind(this)}/>
-   	         <Main content={this.state.content}/>
+   	         <Aside change_content={this.change_content.bind(this)} change_distribute_content={this.change_distribute_content.bind(this)}/>
+   	         <Main content={this.state.content} data={this.state.data}/>
    	     </container>
    	     )
    }
@@ -142,6 +150,8 @@ class Aside extends Component{
 		this.editors={};
 		//  editors姓名与id的键值
 
+		this.articles={};
+
 		this.task;
 		// task表里的所有数据
 
@@ -169,8 +179,11 @@ class Aside extends Component{
 			ajax_post('/contribute/task/resource',{resource:{func:"authors"}},this,(that,res)=>{
 				    //this.authors=res.data.data;
 					let authors=res.data.data;
+					let i=1
 					for(let l in authors){
-						this.authors[l]=authors[l].name;
+						this.authors[i]=authors[l].name;
+						this.authors[authors[l].name]=i;
+						i+=1;
 					}
 					console.log(this.authors)			
 			})
@@ -179,16 +192,30 @@ class Aside extends Component{
 			// {"standard":{"num":[20,20,20,20],"ddl":[1522511999000,1530374399000,1538323199000,1546271999000]},
 			// "schedule":[0,0,0,0],"editor":[],"total":1,
 			// "task":[{"id":1,"id_article":1,"id_role":1,"content":null,"stat":0,"role":2,"flag":0,"date":1524637974000}],
-			// "invoice":[],"article":[{"id":1,"title":"测试","format":".docx;.rar","academicsec":1,"column":1,
+			// "invoice":[],
+			// "article":[{"id":1,"title":"测试","format":".docx;.rar","academicsec":1,"column":1,
 			// "keyword1_ch":"测试","keyword2_ch":null,"keyword3_ch":null,"keyword4_ch":null,"keyword1_en":"test","keyword2_en":null,"keyword3_en":null,"keyword4_en":null,
 			// "summary_ch":"测试","summary_en":"test","writer_id":1,"writers_info":"","writer_prefer":null,"writer_avoid":null,"date_sub":1525314608000,"date_pub":null}]}}
+
+			// bug is here
 			ajax_post_params('/contribute/task',{id_role:1,role:2,stat:0,flag:0,page:1},this,(that,res)=>{
 				let data=[]
 				this.task=res.data.data;
+				for(let l in this.task.article){
+					console.log(l)
+					this.articles[this.task.article[l]['title']]=this.task.article[l]['id'];
+					this.articles[[this.task.article[l]['id']]]=this.task.article[l]['title'];
+				}
 				for(let l in this.task.task){
-					let bug=[]
+					let bug=[] 
 					bug.push(this.task.task[l]['stat']+1);
+
+					//console.log(this.task.article);
+					//console.log(this.authors)
+					//console.log(this.authors[this.task.article[l]['writer_id']])
+
 					bug.push(this.authors[this.task.article[l]['writer_id']]);
+					//alert(this.authors[this.task.article[l]['writer_id']])
 					bug.push(this.task.article[l]['title']);
 					data.push(bug);
 				}
@@ -209,6 +236,7 @@ class Aside extends Component{
 	        		if(l!=0){
 		        		editors.push(data[l]['name']);
 		        		this.editors[data[l]['name']]=data[l]['id'];
+		        		this.editors[data[l]['id']]=data[l]['name'];
 	        		}
 	        	}
 	        	this.state.content[this.state.content.length-1]=editors;
@@ -228,7 +256,10 @@ class Aside extends Component{
    	  console.log(e)
       this.state.content[0]=e['key'];
       // alert('state'+this.state.content['distributePaper']);
-   	  this.props.change_content(this.state.content);   	  
+   	  this.props.change_content(this.state.content);
+   	  
+   	  console.log(this.editors)
+   	  this.props.change_distribute_content({'articles':this.articles,'editors':this.editors,'authors':this.authors});   	  
    }
 
    render(){
@@ -361,6 +392,10 @@ class HasNotDistributed extends Component{
    	 this.container_unfinished=[]
    	 this.choosed_editors={}
    	 this.upload_data={}
+
+   	 this.editor=this.props.editors;
+   	 this.authors=this.props.authors;
+   	 this.articles=this.props.articles;
    }
 
     handleChange(value,e) {
@@ -388,11 +423,27 @@ class HasNotDistributed extends Component{
    }
    handleClick(e){
        this.contents=this.props.content[1].slice(0);
+
+		console.log(this.authors);
+		console.log(this.articles);
+		console.log(this.editor);   	  
+
        console.log(this.contents);
        console.log(this.choosed_editors)
+       
        for(let i in this.choosed_editors){
        	  this.upload_data[i]=this.contents[i].slice(1,);
        	  this.upload_data[i].push(this.choosed_editors[i]);
+       	  console.log(this.upload_data)
+          // 0:["测试作者一", "测试文章1", "编辑1"]
+          this.upload_data[i][0]=this.authors[this.upload_data[i][0]];
+          this.upload_data[i][1]=this.articles[this.upload_data[i][1]];
+          this.upload_data[i][2]=this.editor[this.upload_data[i][2]];
+
+       	  console.log(this.upload_data)
+
+       	  // obj_store(this.upload_data);
+
        	  this.props.content[1][i].push(this.choosed_editors[i]);
        	  //let senderName = ReactDOM.findDOMNode(this.refs['mytable'+i]);
        	  //alert(senderName.style)
@@ -400,14 +451,36 @@ class HasNotDistributed extends Component{
        }
        //console.log(this.props.contents)
        if(JSON.stringify(this.upload_data)!='{}'){
+       		// this.upload_data=obj_get();
        		console.log(this.upload_data);   //稿件分配上传点
+       		// 0:  ["测试作者一", "测试文章1", "编辑2"]
+       		// 1:  ["测试作者二", "测试文章2", "编辑1"]
+  			console.log(this.props.data);
 
+
+       		for(let l in this.upload_data){
+       			// 上传内容格式化
+       			// this.upload_data[l][0]=this.authors[this.upload_data[l][1]];
+       			// this.upload_data[l][1]=this.articles[this.upload_data[l][2]];       			
+       			// this.upload_data[l][2]=this.editors[this.upload_data[l][3]];
+       			alert(this.upload_data[l][0])
+       			alert(this.upload_data[l][1])
+       			alert(this.upload_data[l][2])
+       		}
+       		console.log(this.upload_data);   //稿件分配上传点
        }
       // window.location.reload();
       //alert('已提交');
       this.change_the_other_component();
    }
 	render(){
+			// 
+		   	this.editor=this.props.data.editors;
+		   	this.authors=this.props.data.authors;
+		   	this.articles=this.props.data.articles;
+
+		   	console.log(this.editor);
+
 			let columns = [{
 			  title: '作者名',
 			  dataIndex: 'name',
@@ -1044,7 +1117,8 @@ class PreviewerWorkLoad extends Component{
 }
 class Main extends Component{
    static defaultProps = {
-      content:["":[['','','','']]]
+      content:["":[['','','','']]],
+      data:{}
     }
    constructor(props){
    	 super(props);
@@ -1108,7 +1182,14 @@ class Main extends Component{
    }
    render(){
    	    this.state.contents=this.props.content;
+
    	    if(this.state.contents[0]!=undefined){
+
+	   	    this.state.data=this.props.data;
+	   	    //this.setState({'data':this.props.data});
+	   	    console.log('!!!!!!!!!!');
+	   	    console.log(this.props.data); 
+
    	    	//alert(this.props.content)
    	    	this.get_dated();
 		   	switch(this.props.content[0]){
@@ -1116,7 +1197,7 @@ class Main extends Component{
 							  <main>
 							        <div class="white-back">
 									  <Tabs defaultActiveKey="1">
-									      <TabPane tab="未分配" key="1"><HasNotDistributed content={this.state.contents} change_the_other_component={this.change_the_other_component.bind(this)}/></TabPane>
+									      <TabPane tab="未分配" key="1"><HasNotDistributed data={this.props.data} content={this.state.contents} change_the_other_component={this.change_the_other_component.bind(this)}/></TabPane>
 									      <TabPane tab="已分配" key="2"><HasDistributed content={this.state.contents} key={Math.random()}/></TabPane>
 									  </Tabs>									  
 								    </div>
