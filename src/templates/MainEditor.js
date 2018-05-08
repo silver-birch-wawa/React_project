@@ -39,7 +39,8 @@ function ajax_post(url,data,that,callback){
         //withCredentials:true
     }).then(function(res){
     	//alert('post:'+res)
-        console.log('post:'+res);
+        console.log(url+'\tPost请求到:');
+        console.log(res);
         //alert('post-response:'+res);
         callback(that,res);
         //ajax_get('/manage/getinfo',this);
@@ -55,6 +56,7 @@ function ajax_get(url,that,callback){
         url:URL+url,
         withCredentials:true
     }).then(function(res){
+    	console.log(url+'\tGet请求到:')
         console.log(res);
         //alert('get:'+this.res);
         callback(that,res);
@@ -75,7 +77,8 @@ function ajax_post_params(url,data,that,callback=()=>{}){
     })
 	.then(function(res){
     	//alert('post:'+res)
-        console.log('post:'+res);
+        console.log(url+'\tPost请求到:');
+        console.log(res);
         //alert('post-response:'+res);
         callback(that,res);
         //ajax_get('/manage/getinfo',this);
@@ -152,77 +155,17 @@ class Aside extends Component{
 
 		this.articles={};
 
-		this.task;
+		this.task;    // 未分配的task
+		this.task1;	  // 已分配的
 		// task表里的所有数据
 
 		this.authors={};
 		// id与autho	rs的名字的键值
+
+		this.init_information=[]
 	}
 	componentDidMount() {
 	 		
-	 		// 跑通了
-	 		// {"result":1,"data":
-	 		// [{"name_pinyin":"ceshizuozheyi","education":3,"gender":0,"academicsec1":1,"alive":1,
-	 		// "workspace_en":"test1","academicsec3":null,"academicsec2":2,"title":"","password":"12234","major":1,
-	 		// "workspace_ch":"测试1","id":1,"researchdir":"医学","email":"11111@test.com","introduction":"测试1","address":"测试1","postcode":"100000",
-	 		// "safeque2":"2;测试1","safeque3":"3;测试1","phonenum":"12345678900","safeque1":"1;测试1","officetel":"123456","name":"测试作者一","location":1},
-	 		
-	 		// {"name_pinyin":"ceshizuozheer","education":5,"gender":0,"academicsec1":1,"alive":1,"workspace_en":"test2","academicsec3":2,"academicsec2":2,
-	 		// "title":"","password":"123456","major":1,"workspace_ch":"测试2","id":2,"researchdir":"医学","email":"22222@test.com",
-	 		// "introduction":"测试2","address":"测试2","postcode":"100000","safeque2":"2;测试2","safeque3":"3;测试2","phonenum":"12345678901",
-	 		// "safeque1":"1;测试2","officetel":"123457","name":"测试作者二","location":1},
-	 		
-	 		// {"name_pinyin":"ceshizuozhesan","education":4,"gender":1,"academicsec1":1,"alive":1,
-	 		// "workspace_en":"test","academicsec3":4,"academicsec2":3,"title":"","password":"123456","major":1,"workspace_ch":"测试3","id":3,"researchdir":"医学","email":"33333@test.com",
-	 		// "introduction":"测试3","address":"测试3","postcode":"100000","safeque2":"2;测试3","safeque3":"3;测试3","phonenum":"12345678902","safeque1":"1;测试3",
-	 		// "officetel":"123458","name":"测试作者三","location":1}]}
-			ajax_post('/contribute/task/resource',{resource:{func:"authors"}},this,(that,res)=>{
-				    //this.authors=res.data.data;
-					let authors=res.data.data;
-					let i=1
-					for(let l in authors){
-						this.authors[i]=authors[l].name;
-						this.authors[authors[l].name]=i;
-						i+=1;
-					}
-					console.log(this.authors)			
-			})
-
-			// {"result":1,"data":
-			// {"standard":{"num":[20,20,20,20],"ddl":[1522511999000,1530374399000,1538323199000,1546271999000]},
-			// "schedule":[0,0,0,0],"editor":[],"total":1,
-			// "task":[{"id":1,"id_article":1,"id_role":1,"content":null,"stat":0,"role":2,"flag":0,"date":1524637974000}],
-			// "invoice":[],
-			// "article":[{"id":1,"title":"测试","format":".docx;.rar","academicsec":1,"column":1,
-			// "keyword1_ch":"测试","keyword2_ch":null,"keyword3_ch":null,"keyword4_ch":null,"keyword1_en":"test","keyword2_en":null,"keyword3_en":null,"keyword4_en":null,
-			// "summary_ch":"测试","summary_en":"test","writer_id":1,"writers_info":"","writer_prefer":null,"writer_avoid":null,"date_sub":1525314608000,"date_pub":null}]}}
-
-			// bug is here
-			ajax_post_params('/contribute/task',{id_role:1,role:2,stat:0,flag:0,page:1},this,(that,res)=>{
-				let data=[]
-				this.task=res.data.data;
-				for(let l in this.task.article){
-					console.log(l)
-					this.articles[this.task.article[l]['title']]=this.task.article[l]['id'];
-					this.articles[[this.task.article[l]['id']]]=this.task.article[l]['title'];
-				}
-				for(let l in this.task.task){
-					let bug=[] 
-					bug.push(this.task.task[l]['stat']+1);
-
-					//console.log(this.task.article);
-					//console.log(this.authors)
-					//console.log(this.authors[this.task.article[l]['writer_id']])
-
-					bug.push(this.authors[this.task.article[l]['writer_id']]);
-					//alert(this.authors[this.task.article[l]['writer_id']])
-					bug.push(this.task.article[l]['title']);
-					data.push(bug);
-				}
-				this.state.content[1]=data;
-				console.log(this.task);
-			});					
-
 			// 跑通了
 			// {"result":1,"data":[{"role":0,"gender":0,"alive":1,"name":"主编","id":1,"username":"master"},
 			// {"role":1,"gender":0,"alive":1,"name":"编辑1","id":2,"username":"editor1"},
@@ -241,6 +184,164 @@ class Aside extends Component{
 	        	}
 	        	this.state.content[this.state.content.length-1]=editors;
 	        	console.log(editors);
+
+		 		// 跑通了
+		 		// {"result":1,"data":
+		 		// [{"name_pinyin":"ceshizuozheyi","education":3,"gender":0,"academicsec1":1,"alive":1,
+		 		// "workspace_en":"test1","academicsec3":null,"academicsec2":2,"title":"","password":"12234","major":1,
+		 		// "workspace_ch":"测试1","id":1,"researchdir":"医学","email":"11111@test.com","introduction":"测试1","address":"测试1","postcode":"100000",
+		 		// "safeque2":"2;测试1","safeque3":"3;测试1","phonenum":"12345678900","safeque1":"1;测试1","officetel":"123456","name":"测试作者一","location":1},
+		 		
+		 		// {"name_pinyin":"ceshizuozheer","education":5,"gender":0,"academicsec1":1,"alive":1,"workspace_en":"test2","academicsec3":2,"academicsec2":2,
+		 		// "title":"","password":"123456","major":1,"workspace_ch":"测试2","id":2,"researchdir":"医学","email":"22222@test.com",
+		 		// "introduction":"测试2","address":"测试2","postcode":"100000","safeque2":"2;测试2","safeque3":"3;测试2","phonenum":"12345678901",
+		 		// "safeque1":"1;测试2","officetel":"123457","name":"测试作者二","location":1},
+		 		
+		 		// {"name_pinyin":"ceshizuozhesan","education":4,"gender":1,"academicsec1":1,"alive":1,
+		 		// "workspace_en":"test","academicsec3":4,"academicsec2":3,"title":"","password":"123456","major":1,"workspace_ch":"测试3","id":3,"researchdir":"医学","email":"33333@test.com",
+		 		// "introduction":"测试3","address":"测试3","postcode":"100000","safeque2":"2;测试3","safeque3":"3;测试3","phonenum":"12345678902","safeque1":"1;测试3",
+		 		// "officetel":"123458","name":"测试作者三","location":1}]}
+				ajax_post('/contribute/task/resource',{resource:{func:"authors"}},this,(that,res)=>{
+					    //this.authors=res.data.data;
+						let authors=res.data.data;
+						let i=1
+						for(let l in authors){
+							this.authors[i]=authors[l].name;
+							this.authors[authors[l].name]=i;
+							i+=1;
+						}
+						console.log(this.authors)			
+
+
+						// {result: 1, data: Array(4)}
+						// {
+						// data:0:{content:"",date:1525682810000,flag:0,id:3,id_article:1,id_role:2,role:3,stat:0},1:{content:"",date:1525682810000,flag:0,id:3,id_article:1,id_role:2,role:3,stat:0}
+						// }
+						// ajax_post('/contribute/task/resource',{resource:{func:"tasks"}},this,(that,res)=>{
+						// 	console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+						// 	for(let l in res.data.data){
+						// 		let id=res.data.data[l]['id'];
+						// 		let id_article=res.data.data[l]['id_article'];
+						// 		let id_role=res.data.data[l]['id_role'];
+						// 		let stat=res.data.data[l]['stat']+1;
+						// 		let bug=[]
+						// 		bug.push(stat);
+						// 		bug.push(this.authors[id_role]);								
+						// 		bug.push(this.);  // 文章标题
+						// 		bug.push();
+						// 	}
+						// 	console.log(res.data);
+						// })
+
+
+						// {"result":1,"data":
+						// {"standard":{"num":[20,20,20,20],"ddl":[1522511999000,1530374399000,1538323199000,1546271999000]},
+						// "schedule":[0,0,0,0],"editor":[],"total":1,
+						// "task":[{"id":1,"id_article":1,"id_role":1,"content":null,"stat":0,"role":2,"flag":0,"date":1524637974000}],
+						// "invoice":[],
+						// "article":[{"id":1,"title":"测试","format":".docx;.rar","academicsec":1,"column":1,
+						// "keyword1_ch":"测试","keyword2_ch":null,"keyword3_ch":null,"keyword4_ch":null,"keyword1_en":"test","keyword2_en":null,"keyword3_en":null,"keyword4_en":null,
+						// "summary_ch":"测试","summary_en":"test","writer_id":1,"writers_info":"","writer_prefer":null,"writer_avoid":null,"date_sub":1525314608000,"date_pub":null}]}}
+						
+						// 已分配的接口，后台对于刚分配的稿件状态没有修改状态位stat,把stat+1以兼容前端的格式
+						ajax_post_params('/contribute/task',{id_role:1,role:2,stat:0,flag:1,page:1},this,(that,res)=>{
+							//this.task=res.data.data;
+							this.task1=res.data.data;
+							console.log(this.task1);
+							for(let l in this.task1.article){
+								console.log(l)
+								this.articles['writer_id'+this.task1.article[l]['id']]=this.task1.article[l]['writer_id'];
+								this.articles[this.task1.article[l]['title']]=this.task1.article[l]['id'];
+								//this.article[this.task1.article[l]['id']]=this.task1.article[l]['title'];
+								this.articles[[this.task1.article[l]['id']]]=this.task1.article[l]['title'];
+							}
+							for(let l in this.task1.task){
+								if(this.task1.task[l]['stat']==0&&this.task1.task[l]['role']==2&&this.task1.task[l]['flag']==0){
+
+								}
+								else{
+									let bug=[] 
+									let id_article=this.task1.task[l]['id_article'];
+									console.log(this.task1.task[l]);
+									// console.log(this.authors[this.articles['writer_id'+id_article]]);
+									// console.log(this.articles[id_article]);
+									// console.log(this.editors);
+									// console.log(this.task1.task1[l]['id_role'])
+									if(this.task1.task[l]['stat']==0&&this.task1.task[l]['role']==3&&this.task1.task[l]['flag']==0)
+									{
+										//alert('!!!!')
+										bug.push(this.task1.task[l]['stat']+2);
+									}
+									else{
+										bug.push(this.task1.task[l]['stat']+1);
+									}
+									//console.log(this.task1.article);
+									//console.log(this.authors)
+									//console.log(this.authors[this.task1.article[l]['writer_id']])
+									bug.push(this.authors[this.articles['writer_id'+id_article]]);
+									//alert(this.authors[this.task1.article[l]['writer_id']])
+									// console.log(id_article)
+									// console.log(this.articles)
+									bug.push(this.articles[id_article]);
+									//if(this.task1.task1[l]['id_role']!=1){
+									if(this.task1.task[l]['id_role']==1){
+										bug.push('主编');
+									}
+									else{
+										bug.push(this.editors[this.task1.task[l]['id_role']]);
+									}
+									//}
+									this.init_information.push(bug);
+									console.log(this.init_information);
+								}
+							}
+							console.log(this.init_information);
+							this.state.content[1]=this.init_information;
+							console.log(this.state.content[1])
+						});	
+
+						// 未分配的接口
+						ajax_post_params('/contribute/task',{id_role:1,role:2,stat:0,flag:0,page:1},this,(that,res)=>{
+							this.task=res.data.data;
+							console.log(this.task);
+							for(let l in this.task.article){
+								console.log(l)
+								this.articles['writer_id'+this.task.article[l]['id']]=this.task.article[l]['writer_id'];
+								this.articles[this.task.article[l]['title']]=this.task.article[l]['id'];
+								this.articles[[this.task.article[l]['id']]]=this.task.article[l]['title'];
+							}
+							for(let l in this.task.task){
+								if(this.task.task[l]['stat']==0&&this.task.task[l]['role']==2&&this.task.task[l]['flag']==0){
+									let bug=[] 
+									let id_article=this.task.task[l]['id_article'];
+									console.log(this.task.task[l]);
+									console.log(this.authors[this.articles['writer_id'+id_article]]);
+									console.log(this.articles[id_article]);
+									console.log(this.editors);
+
+									bug.push(this.task.task[l]['stat']+1);
+									//console.log(this.task.article);
+									//console.log(this.authors)
+									//console.log(this.authors[this.task.article[l]['writer_id']])
+									// console.log(id_article)
+									// console.log(this.task.article)
+									bug.push(this.authors[this.articles['writer_id'+id_article]]);
+									// console.log(id_article)
+									// console.log(this.articles)
+									bug.push(this.articles[id_article]);
+									this.init_information.push(bug);
+									console.log(this.init_information);
+									// console.log(bug)
+								}
+							}
+							console.log(this.init_information);
+							this.state.content[1]=this.init_information;
+							console.log(this.state.content[1])
+							console.log(this.task);
+						});	
+
+				})
+
 	        })   
 
 	}
@@ -259,7 +360,8 @@ class Aside extends Component{
    	  this.props.change_content(this.state.content);
    	  
    	  console.log(this.editors)
-   	  this.props.change_distribute_content({'articles':this.articles,'editors':this.editors,'authors':this.authors});   	  
+   	  console.log({'articles':this.articles,'editors':this.editors,'authors':this.authors});
+   	  this.props.change_distribute_content({'articles':this.articles,'editors':this.editors,'authors':this.authors,'tasks':this.task,'tasks1':this.task1});   	  
    }
 
    render(){
@@ -281,7 +383,7 @@ class Aside extends Component{
 					style={{ width:"80%",paddingLeft:'25px'}}
 					onClick={this.handleClick.bind(this)}
 				>
-					<MenuItemGroup key="i1" style={{paddingLeft:'-50px!important'}} title={<span><Icon type="bars" /><span>功能菜单</span></span>}>
+					<MenuItemGroup key="i1" style={{paddingLeft:'-50px!important'}}>
 						<Menu.Item key="distributePaper"><Icon type="pie-chart" />&nbsp;稿件分配</Menu.Item>
 						<Menu.Item key="timetable"><Icon type="calendar" />&nbsp;稿件排期</Menu.Item>
 						<Menu.Item key="paper-status"><Icon type="clock-circle-o" />&nbsp;稿件状态</Menu.Item>
@@ -393,9 +495,10 @@ class HasNotDistributed extends Component{
    	 this.choosed_editors={}
    	 this.upload_data={}
 
-   	 this.editor=this.props.editors;
-   	 this.authors=this.props.authors;
-   	 this.articles=this.props.articles;
+    	this.editor=this.props.data.editors;
+    	this.authors=this.props.data.authors;
+    	this.articles=this.props.data.articles;
+	    this.tasks=this.props.data.tasks;
    }
 
     handleChange(value,e) {
@@ -427,6 +530,7 @@ class HasNotDistributed extends Component{
 		console.log(this.authors);
 		console.log(this.articles);
 		console.log(this.editor);   	  
+		console.log(this.tasks); 
 
        console.log(this.contents);
        console.log(this.choosed_editors)
@@ -463,11 +567,36 @@ class HasNotDistributed extends Component{
        			// this.upload_data[l][0]=this.authors[this.upload_data[l][1]];
        			// this.upload_data[l][1]=this.articles[this.upload_data[l][2]];       			
        			// this.upload_data[l][2]=this.editors[this.upload_data[l][3]];
-       			alert(this.upload_data[l][0])
-       			alert(this.upload_data[l][1])
-       			alert(this.upload_data[l][2])
+       			let id='';
+       			let id_article=this.upload_data[l][1];
+       			let id_role=this.upload_data[l][2];
+       			for(let l in this.tasks.task){
+       				console.log(this.tasks.task[l])
+       				let section=this.tasks.task[l];
+       				if(section.id_article==id_article){
+       					id=section.id;
+       				}
+       			}
+       			let post={}
+       			post['task']={};
+       			post['task']['id']=id;
+       			post['task']['id_article']=this.upload_data[l][1];       			
+       			post['task']['content']=''; 
+       			post['task']['stat']=0; 
+       			post['task']['flag']=0; 
+       			post['id_role']=[id_role];
+       			console.log('上传的数据:')
+       			console.log(post);
+       			
+       			//ajax_post();
+				ajax_post('/contribute/task/allocate',post,this,(that,res)=>{
+					console.log(res.data);
+				})
+       			// alert(this.upload_data[l][0])
+       			// alert(this.upload_data[l][1])
+       			// alert(this.upload_data[l][2])
        		}
-       		console.log(this.upload_data);   //稿件分配上传点
+       		// console.log(this.upload_data);   //稿件分配上传点
        }
       // window.location.reload();
       //alert('已提交');
@@ -478,6 +607,7 @@ class HasNotDistributed extends Component{
 		   	this.editor=this.props.data.editors;
 		   	this.authors=this.props.data.authors;
 		   	this.articles=this.props.data.articles;
+	    	this.tasks=this.props.data.tasks;
 
 		   	console.log(this.editor);
 
@@ -657,6 +787,11 @@ class HasNotDate extends Component{
 	   	    this.label='';
 	   	    //this.state.has_distributed=this.has_distributed;
 	   	    // this.state.has_distributed={1:3,2:8,3:19,4:9};
+	    }
+	    componentDidMount(){
+			 // ajax_post('/task/schedule',post,this,(that,res)=>{
+			 // 	console.log(res.data);
+			 // })
 	    }
 	    Pass(e){
 	    	this.allow=true;
@@ -1128,25 +1263,56 @@ class Main extends Component{
    	 this.title=['状态','作者名','稿件名','负责编辑'];
    	 this.state={'contents':[],'changed':true,'has_dated':{},'lanmu':[]};
    	 this.test=1;
+   	 this.task1={}
    	 // has_dated 记录所有数据及状态
    	 this.state.lanmu=['妇科','烧伤科','儿科'];
    }
    get_dated(){
+   		console.log('看看情况:')
+   		console.log(this.props.data);
+
    		if(this.test!=1){
    			return;
    		}
    		this.test+=1;
+
+   		for(let l in this.props.data.tasks1.task){
+   			let task1=this.props.data.tasks1.task;
+   			let id_article=task1[l]['id_article'];
+   			// console.log(id_article)
+   			this.task1[id_article]={'stat':task1[l]['stat'],'role':task1[l]['role'],'flag':task1[l]['flag']};
+   			
+   			console.log(this.task1);
+   			//this.task1[this.props.data.articles[id_article]]=id_article;
+   		}
    	    // 获取时间和分配状态
    	    let k=1;
-	    this.state.contents[1].map((items,i)=>{ 
-    	if(items[0]==7){
-    		this.state.has_dated[k]={}
-    		this.state.has_dated[k]['data']=items.slice(1);
-    		this.state.has_dated[k]['state']=parseInt(4*Math.random()+1)>2?false:2;   // 如果未分配则为false
-    		//this.state.has_dated[k]['state']=false;   // 如果未分配则为false
-    		k+=1;
-    		console.log(this.state.has_dated)
-    		//this.state.has_dated[i+1].unshift(i);
+   	    // console.log(this.state.contents)
+	    this.state.contents[1].map((items,i)=>{ 	
+		    	if(items[0]==7){
+		    		// 7 则为dated
+		    		this.state.has_dated[k]={}
+		    		this.state.has_dated[k]['data']=items.slice(1);
+		    		// console.log(items)
+		    		console.log(this.props.data.articles[items[2]]);
+		    		let id_article=this.props.data.articles[items[2]];
+		    		// console.log(id_article)	
+		    		// console.log(this.task1[id_article])
+		    		let stat=this.task1[id_article]['stat'];
+		    		let role=this.task1[id_article]['role'];
+		    		let flag=this.task1[id_article]['flag'];
+		    		if(stat==6&&role==2&&flag==0)
+		    		{
+						this.state.has_dated[k]['state']=false;   // 如果未分配则为false		    			
+		    		}
+		    		else{
+						this.state.has_dated[k]['state']=parseInt(4*Math.random()+1);   // 如果未分配则为false		    			
+		    		}
+		    		//this.state.has_dated[k]['state']=parseInt(4*Math.random()+1)>2?false:2;   // 如果未分配则为false
+		    		//this.state.has_dated[k]['state']=false;   // 如果未分配则为false
+		    		k+=1;
+		    		//console.log(this.state.has_dated)
+		    		//this.state.has_dated[i+1].unshift(i);
     		    	}
     		             
     		    							})
@@ -1186,12 +1352,11 @@ class Main extends Component{
    	    if(this.state.contents[0]!=undefined){
 
 	   	    this.state.data=this.props.data;
-	   	    //this.setState({'data':this.props.data});
-	   	    console.log('!!!!!!!!!!');
-	   	    console.log(this.props.data); 
+	   	    //this.setState({'data':this.props.data}); 
 
    	    	//alert(this.props.content)
    	    	this.get_dated();
+
 		   	switch(this.props.content[0]){
 			        case "distributePaper":return (
 							  <main>

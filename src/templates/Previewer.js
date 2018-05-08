@@ -128,7 +128,7 @@ class Aside extends Component{
 					style={{ width:"80%",paddingLeft:'25px'}}
 					onClick={this.handleClick.bind(this)}
 				>
-					<MenuItemGroup key="i1" title={<span><Icon type="bars" /><span>功能菜单</span></span>}>
+					<MenuItemGroup key="i1">
 						<Menu.Item key="Check_paper"><Icon type="pie-chart" />&nbsp;稿件审理</Menu.Item>
 						<Menu.Item key="Re_check_paper"><Icon type="calendar" />&nbsp;稿件重审</Menu.Item>
 						<Menu.Item key="Personal_info_change"> <Icon type="user-add" />&nbsp;个人信息修改</Menu.Item>

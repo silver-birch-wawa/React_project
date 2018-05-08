@@ -90,14 +90,14 @@ class Container extends Component{
    	 	'role':'作者',
    	 	'作者':['学历','联系方式','收寄地址','办公室电话','职称','所在地邮编','所在地中文名','所在地英文名','研究方向'],
    	 	'主编':[],
-   	 	'审稿人':['研究方向'],
+   	 	'审稿人':['研究方向','银行卡号'],
    	 	'读者':[],
    	 	'编辑':[],
    	 	'data':'',
    	 	'education':[],
    	 	'academicsec':[]
    	     };   	 
-   	 this.Personal_info={'姓名':'','个人介绍':'','职称':'','学历':'','性别':'','联系方式':'','办公室电话':'','研究方向':[''],'收寄地址':'','所在地邮编':'','所在地中文名':'','所在地英文名':''};
+   	 this.Personal_info={'姓名':'','个人介绍':'','职称':'','学历':'','银行卡号':'','性别':'','联系方式':'','办公室电话':'','研究方向':[''],'收寄地址':'','所在地邮编':'','所在地中文名':'','所在地英文名':''};
    	 //this.Personal_info={'姓名':'qqqq','个人介绍':'jlqjlqdjlldjlj','职称':'博士生导师','学历':'本科生','性别':'女','联系方式':'189192121','办公室电话':'1 979829382','研究方向':['内科','妇科'],'收寄地址':'成都','所在地邮编':'32323232','所在地中文名':'是继续开始进行筛选','所在地英文名':'kewhukwncwncdwc'};	
    	 this.url='';
 	// axios.defaults.withCredentials=true;
@@ -393,7 +393,7 @@ class Container extends Component{
 	console.log(this.Personal_info);
 	if(this.state.education[0]!=undefined&&this.state.academicsec[0]!=undefined){
 		 return(
-		 	<html style={{paddingLeft:'90px'}}>
+		 	<html style={{paddingLeft:'35px'}}>
 				<middleForm>
 				  <div class='form-section'>
 				     {this.icon['职称']}
