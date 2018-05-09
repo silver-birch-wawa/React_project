@@ -21,6 +21,27 @@ const Panel = Collapse.Panel;
 
 const URL='http://127.0.0.1:8080';
 
+Date.prototype.format = function(fmt) { 
+     var o = { 
+        "M+" : this.getMonth()+1,                 //月份 
+        "d+" : this.getDate(),                    //日 
+        "h+" : this.getHours(),                   //小时 
+        "m+" : this.getMinutes(),                 //分 
+        "s+" : this.getSeconds(),                 //秒 
+        "q+" : Math.floor((this.getMonth()+3)/3), //季度 
+        "S"  : this.getMilliseconds()             //毫秒 
+    }; 
+    if(/(y+)/.test(fmt)) {
+            fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length)); 
+    }
+     for(var k in o) {
+        if(new RegExp("("+ k +")").test(fmt)){
+             fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+         }
+     }
+    return fmt; 
+}  
+
 // 利用sessionstorage共享全局变量
 function obj_store(obj){
 	sessionStorage.setItem('obj', JSON.stringify(obj)); 
@@ -162,7 +183,12 @@ class Aside extends Component{
 		this.authors={};
 		// id与autho	rs的名字的键值
 
+
 		this.init_information=[]
+		// 缓存初始数据
+
+		this.date={'article_to_id':{},'lanmu':{}};
+		// 缓存有关排期的信息
 	}
 	componentDidMount() {
 	 		
@@ -183,7 +209,7 @@ class Aside extends Component{
 	        		}
 	        	}
 	        	this.state.content[this.state.content.length-1]=editors;
-	        	console.log(editors);
+	        	//console.log(editors);
 
 		 		// 跑通了
 		 		// {"result":1,"data":
@@ -210,29 +236,7 @@ class Aside extends Component{
 							this.authors[authors[l].name]=i;
 							i+=1;
 						}
-						console.log(this.authors)			
-
-
-						// {result: 1, data: Array(4)}
-						// {
-						// data:0:{content:"",date:1525682810000,flag:0,id:3,id_article:1,id_role:2,role:3,stat:0},1:{content:"",date:1525682810000,flag:0,id:3,id_article:1,id_role:2,role:3,stat:0}
-						// }
-						// ajax_post('/contribute/task/resource',{resource:{func:"tasks"}},this,(that,res)=>{
-						// 	console.log('@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-						// 	for(let l in res.data.data){
-						// 		let id=res.data.data[l]['id'];
-						// 		let id_article=res.data.data[l]['id_article'];
-						// 		let id_role=res.data.data[l]['id_role'];
-						// 		let stat=res.data.data[l]['stat']+1;
-						// 		let bug=[]
-						// 		bug.push(stat);
-						// 		bug.push(this.authors[id_role]);								
-						// 		bug.push(this.);  // 文章标题
-						// 		bug.push();
-						// 	}
-						// 	console.log(res.data);
-						// })
-
+						//console.log(this.authors)			
 
 						// {"result":1,"data":
 						// {"standard":{"num":[20,20,20,20],"ddl":[1522511999000,1530374399000,1538323199000,1546271999000]},
@@ -247,7 +251,28 @@ class Aside extends Component{
 						ajax_post_params('/contribute/task',{id_role:1,role:2,stat:0,flag:1,page:1},this,(that,res)=>{
 							//this.task=res.data.data;
 							this.task1=res.data.data;
+
+							console.log('已分配的数据:');
 							console.log(this.task1);
+
+							let ddl=this.task1.standard.ddl;
+							console.log(ddl);
+
+							let num=this.task1.standard.num;
+							console.log(num);
+
+							let schedule=this.task1.standard.schedule;
+							console.log(schedule);
+
+							this.date['schedule']=schedule;
+							// [0,1,0,0]  稿件已订阅数量/月
+
+							this.date['num']=num;
+							// [20,20,20,20]
+
+							this.date['ddl']=[1522511999000,1530374399000,1538323199000,1546271999000];
+							// [第1刊截止日期,...,...,...]
+
 							for(let l in this.task1.article){
 								console.log(l)
 								this.articles['writer_id'+this.task1.article[l]['id']]=this.task1.article[l]['writer_id'];
@@ -263,6 +288,9 @@ class Aside extends Component{
 									let bug=[] 
 									let id_article=this.task1.task[l]['id_article'];
 									console.log(this.task1.task[l]);
+
+									this.date.article_to_id[id_article]=this.task1.task[l]['id'];
+									console.log(this.date.article_to_id);
 									// console.log(this.authors[this.articles['writer_id'+id_article]]);
 									// console.log(this.articles[id_article]);
 									// console.log(this.editors);
@@ -275,13 +303,9 @@ class Aside extends Component{
 									else{
 										bug.push(this.task1.task[l]['stat']+1);
 									}
-									//console.log(this.task1.article);
-									//console.log(this.authors)
-									//console.log(this.authors[this.task1.article[l]['writer_id']])
+
 									bug.push(this.authors[this.articles['writer_id'+id_article]]);
-									//alert(this.authors[this.task1.article[l]['writer_id']])
-									// console.log(id_article)
-									// console.log(this.articles)
+
 									bug.push(this.articles[id_article]);
 									//if(this.task1.task1[l]['id_role']!=1){
 									if(this.task1.task[l]['id_role']==1){
@@ -292,10 +316,10 @@ class Aside extends Component{
 									}
 									//}
 									this.init_information.push(bug);
-									console.log(this.init_information);
+									//console.log(this.init_information);
 								}
 							}
-							console.log(this.init_information);
+							//console.log(this.init_information);
 							this.state.content[1]=this.init_information;
 							console.log(this.state.content[1])
 						});	
@@ -303,7 +327,9 @@ class Aside extends Component{
 						// 未分配的接口
 						ajax_post_params('/contribute/task',{id_role:1,role:2,stat:0,flag:0,page:1},this,(that,res)=>{
 							this.task=res.data.data;
+							console.log('未分配的数据');
 							console.log(this.task);
+
 							for(let l in this.task.article){
 								console.log(l)
 								this.articles['writer_id'+this.task.article[l]['id']]=this.task.article[l]['writer_id'];
@@ -320,10 +346,7 @@ class Aside extends Component{
 									console.log(this.editors);
 
 									bug.push(this.task.task[l]['stat']+1);
-									//console.log(this.task.article);
-									//console.log(this.authors)
-									//console.log(this.authors[this.task.article[l]['writer_id']])
-									// console.log(id_article)
+
 									// console.log(this.task.article)
 									bug.push(this.authors[this.articles['writer_id'+id_article]]);
 									// console.log(id_article)
@@ -338,7 +361,27 @@ class Aside extends Component{
 							this.state.content[1]=this.init_information;
 							console.log(this.state.content[1])
 							console.log(this.task);
-						});	
+						});
+
+						// 0:{column: "综述", id: 1}
+						// 1:{column: "医学", id: 2}
+						// 2:{column: "其他", id: 3}
+						ajax_post('/contribute/task/resource',{resource:{func:"type_column"}},this,(that,res)=>{
+							console.log('栏目:');
+							let lanmu={};
+							let i=0; // 计数
+							for(let l in res.data.data){
+								i++
+								lanmu[res.data.data[l]['column']]=res.data.data[l]['id'];
+								lanmu[res.data.data[l]['id']]=res.data.data[l]['column'];
+							}
+							lanmu['length']=i;
+							console.log(lanmu);
+							this.date.lanmu=lanmu;
+							//console.log(res);
+							//console.log(this.date);
+							//res.data.data;
+						})
 
 				})
 
@@ -361,7 +404,7 @@ class Aside extends Component{
    	  
    	  console.log(this.editors)
    	  console.log({'articles':this.articles,'editors':this.editors,'authors':this.authors});
-   	  this.props.change_distribute_content({'articles':this.articles,'editors':this.editors,'authors':this.authors,'tasks':this.task,'tasks1':this.task1});   	  
+   	  this.props.change_distribute_content({'articles':this.articles,'editors':this.editors,'authors':this.authors,'tasks':this.task,'tasks1':this.task1,'date':this.date});   	  
    }
 
    render(){
@@ -768,7 +811,9 @@ class HasNotDate extends Component{
 	   	    // 
 	   	    this.state={'contents':[],'container':[],'upload_data':[],has_dated:{},has_distributed:{},changed:false,'download_data':{},visible:false,'none':''};
 	   	    this.upload_data={};
-	   	    this.get_data=4;  // 刊数  需要请求后端
+	   	    this.get_data=0;  // 刊数  需要请求后端
+	   	    
+
 	   	    for(let l=1;l<this.get_data+1;l++){
 	   	    	this.state.has_distributed[l]=0;
 	   	    }
@@ -785,6 +830,7 @@ class HasNotDate extends Component{
 
 	   	    this.key='';
 	   	    this.label='';
+	   	    this.date;
 	   	    //this.state.has_distributed=this.has_distributed;
 	   	    // this.state.has_distributed={1:3,2:8,3:19,4:9};
 	    }
@@ -875,10 +921,23 @@ class HasNotDate extends Component{
 	    	}
 	    	//this.setState({'has_dated':this.state.has_dated});
 	    	//this.setState({'has_dated':this.props.has_dated});
-    		console.log(this.upload_data); // 稿件排期上传点
+    		if(this.upload_data['栏目']!=undefined&&this.upload_data['刊数']!=undefined){
+    			console.log('警告:只有在上传时允许出现')
+	    		console.log(this.upload_data); // 稿件排期上传点
+
+	            // 1: {姓名:"测试作者一",稿件名:"测试文章1", 栏目: "综述", 刊数: "2"}  
+
+    		}  		
+    		//console.log(this.upload_data);
 	    }
  		render(){
 			let that=this;
+			console.log('date来了！！');
+			this.date=this.props.data.date;
+			console.log(this.date);
+
+			this.get_data=this.date.dll.length;
+
 			//alert('changed');
 			//console.log(this.state.has_distributed);
 			//alert(this.props.content);
@@ -956,7 +1015,7 @@ class HasNotDate extends Component{
 															let k=-1;
 															let myOption=[];
 															while(k++<that.get_data-1) {
-																myOption.push(<Option value={(i-1)*1000+k} key={k+100}>{k+1}&nbsp;<Badge style={{marginBottom:'4px'}}count={that.state.has_distributed[k+1]}/></Option>)
+																myOption.push(<Option value={(i-1)*1000+k} key={k+100}>{k+1}&nbsp;<Badge style={{marginBottom:'4px',marginRight:'4px'}}count={that.state.has_distributed[k+1]}/><Badge style={{marginBottom:'4px',backgroundColor:'#87d068'}}count={that.date.num[k]-that.state.has_distributed[k+1]}/></Option>)
 															//console.log(myOption);
 															}
 															return myOption;
@@ -982,6 +1041,7 @@ class HasNotDate extends Component{
 				          <p>提交之后就不能更改了哦。</p>
 				          </Modal>
 				          <p style={{fontSize:'20px',marginTop:'20px',marginLeft:'10px'}}>注: <span style={{'color':'red'}}>标红</span>数字为已分配稿件数量</p>
+				          <p style={{fontSize:'20px',marginTop:'20px',marginLeft:'10px'}}>注: <span style={{'color':'green'}}>标绿</span>数字为未分配稿件数量</p>
 				    </div>
 				)
 	         }
@@ -1003,7 +1063,9 @@ class HasDate extends Component{
 	   	    this.state={'contents':[],'container':[],'upload_data':[],has_dated:{},has_distributed:{},changed:false,'download_data':{}};
 	   	    this.upload_data={};
 	   	    //this.state.has_dated={};
-	   	    this.get_data=4;  // 刊数  需要请求后端
+	   	    this.get_data=0;  // 刊数  需要请求后端
+
+
 	   	    for(let l=1;l<this.get_data+1;l++){
 	   	    	this.state.has_distributed[l]=0;
 	   	    }
@@ -1054,6 +1116,9 @@ class HasDate extends Component{
 	    }
 		render(){
 			let that=this;
+			this.date=this.props.data.date;
+			this.get_data=this.date.dll.length;
+			
 			let columns = [{
 			  title: '作者名',
 			  dataIndex: 'name',
@@ -1261,13 +1326,27 @@ class Main extends Component{
    	 this.status_code={1:'未分配',2:'审阅中',3:'未通过',4:'待修改',5:'通过',6:'格式确认' ,7:'已缴费'};
    	 this.td_width=['3rem','3rem','9rem','3rem'];
    	 this.title=['状态','作者名','稿件名','负责编辑'];
+   	 
    	 this.state={'contents':[],'changed':true,'has_dated':{},'lanmu':[]};
+
+   	 // has_dated 分两个部分，data负责数据，而stat负责对应的期数
    	 this.test=1;
    	 this.task1={}
    	 // has_dated 记录所有数据及状态
    	 this.state.lanmu=['妇科','烧伤科','儿科'];
+
    }
    get_dated(){
+   		let lanmu=[];
+   		for(let i=1;i<this.props.data.date.lanmu.length+1;i++){
+   			lanmu.push(this.props.data.date.lanmu[i]);
+   		}
+   		this.state.lanmu=lanmu;
+   		//this.setState({'lanmu':lanmu});
+
+   		console.log(this.props.data);
+   		//this.setState({'lanmu':this.props.data.date.lanmu});
+   		
    		console.log('看看情况:')
    		console.log(this.props.data);
 
@@ -1303,10 +1382,13 @@ class Main extends Component{
 		    		let flag=this.task1[id_article]['flag'];
 		    		if(stat==6&&role==2&&flag==0)
 		    		{
+		    			console.log(this.props.data.date);
 						this.state.has_dated[k]['state']=false;   // 如果未分配则为false		    			
 		    		}
 		    		else{
-						this.state.has_dated[k]['state']=parseInt(4*Math.random()+1);   // 如果未分配则为false		    			
+		    			console.log(this.props.data.date);
+						this.state.has_dated[k]['state']=this.props.data.date.article_to_id[id_article];
+						//this.state.has_dated[k]['state']=parseInt(4*Math.random()+1);   // 如果未分配则为false		    			
 		    		}
 		    		//this.state.has_dated[k]['state']=parseInt(4*Math.random()+1)>2?false:2;   // 如果未分配则为false
 		    		//this.state.has_dated[k]['state']=false;   // 如果未分配则为false
@@ -1372,8 +1454,8 @@ class Main extends Component{
 			        						<main>
 			        							<div class='white-back'>
 			        								<Tabs defaultActiveKey="1">
-												      <TabPane tab="未排期" key="1"><HasNotDate content={this.state.contents} lanmu={this.state.lanmu} has_dated={this.state.has_dated} change_the_other_date_component={this.change_the_other_date_component.bind(this)}/></TabPane>
-												      <TabPane tab="已排期" key="2"><HasDate content={this.state.contents} has_dated={this.state.has_dated} key={Math.random()}/></TabPane>
+												      <TabPane tab="未排期" key="1"><HasNotDate data={this.props.data} content={this.state.contents} lanmu={this.state.lanmu} has_dated={this.state.has_dated} change_the_other_date_component={this.change_the_other_date_component.bind(this)}/></TabPane>
+												      <TabPane tab="已排期" key="2"><HasDate data={this.props.data} content={this.state.contents} has_dated={this.state.has_dated} key={Math.random()}/></TabPane>
 												    </Tabs>
 			        							</div>
 			        						</main>
