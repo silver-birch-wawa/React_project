@@ -187,7 +187,7 @@ class Aside extends Component{
 		this.init_information=[]
 		// 缓存初始数据
 
-		this.date={'article_to_id':{},'lanmu':{}};
+		this.date={'article_to_id':{},'article_to_pub':{},'lanmu':{}};
 		// 缓存有关排期的信息
 	}
 	componentDidMount() {
@@ -270,11 +270,19 @@ class Aside extends Component{
 							this.date['num']=num;
 							// [20,20,20,20]
 
-							this.date['ddl']=[1522511999000,1530374399000,1538323199000,1546271999000];
+							this.date['ddl']=ddl
 							// [第1刊截止日期,...,...,...]
+
 
 							for(let l in this.task1.article){
 								console.log(l)
+								this.date['article_to_pub'][this.task1.article[l]['id']]=this.task1.article[l]['date_pub'];
+								this.date['article_to_pub'][this.task1.article[l]['date_pub']]=this.task1.article[l]['id'];
+
+								// articles的数据
+								this.articles['article_to_lanmu'+this.task1.article[l]['id']]=this.task1.article[l]['column'];
+
+
 								this.articles['writer_id'+this.task1.article[l]['id']]=this.task1.article[l]['writer_id'];
 								this.articles[this.task1.article[l]['title']]=this.task1.article[l]['id'];
 								//this.article[this.task1.article[l]['id']]=this.task1.article[l]['title'];
@@ -777,13 +785,19 @@ class Paper_status extends Component{
 					//alert(Temp['name'])
 					Temp['paperName']=item[2];
 					Temp['editor']=item[3];
-
+					
+					// console.log(this.props.data);
+					// console.log(this.props.data.articles['article_to_lanmu'+this.props.data.articles[Temp['paperName']]]);
+					// console.log(this.props.data.date.lanmu)
+					// console.log(this.props.data.date.lanmu[this.props.data.articles['article_to_lanmu'+this.props.data.articles[Temp['paperName']]]])
+					Temp['lanmu']=this.props.data.date.lanmu[this.props.data.articles['article_to_lanmu'+this.props.data.articles[Temp['paperName']]]]
 					// if(item[2]==undefined){
 					// 	item[2]='undefined';
 					// }
 					if(item[3]==undefined){
 						item[3]='undefined';
-					}										
+					}
+
 					data.push(Temp);
 					console.log(data)
 	             	item[0]=temp;
@@ -831,6 +845,8 @@ class HasNotDate extends Component{
 	   	    this.key='';
 	   	    this.label='';
 	   	    this.date;
+	   	    
+	   	    this.post_data={};
 	   	    //this.state.has_distributed=this.has_distributed;
 	   	    // this.state.has_distributed={1:3,2:8,3:19,4:9};
 	    }
@@ -844,8 +860,16 @@ class HasNotDate extends Component{
 	    	//alert('Ok')
 	    	this.setState({visible:false,});
 	    	this.props.change_the_other_date_component(this.key,this.label);
-	    	//this.Upload()
-	    	console.log(this.upload_data[this.key]);
+	    	//this.Upload()    	
+	    	console.log('提交报文');
+	    	console.log(this.post_data);
+	    	//this.post_data.article.date_pub=new Date(this.post_data.article.date_pub).format("yyyy-MM-dd hh:mm:ss").toString();
+	    	//console.log(this.post_data);
+			ajax_post('/contribute/task/schedule',this.post_data,this,(that,res)=>{
+				console.log('post之后的结果');
+				console.log(res);
+			})	    	
+	    	//console.log(this.upload_data[this.key]);
 	    	//this.allow=true;
 	    }
 	    Cancel(e){
@@ -873,6 +897,49 @@ class HasNotDate extends Component{
 	    			this.key=key;
 	    			this.label=this.upload_data[key]['刊数'];
 	    	  }
+
+    		if(this.upload_data[key]['栏目']!=undefined&&this.upload_data[key]['刊数']!=undefined){
+    			alert(1);
+    			console.log('警告:只有在上传时允许出现')
+    			//console.log(this.props.data);
+	    		console.log(this.upload_data); // 稿件排期上传点
+				
+				let data=this.props.data;
+				let upload_data={'task':{},'article':{}};
+
+				let id_article=data.articles[this.props.has_dated[key]['data'][1]];
+				upload_data.task['id']=data.date.article_to_id[id_article];
+				upload_data.task['id_article']=id_article;
+				upload_data.task['content']='pass';
+				upload_data.task['stat']=6;
+				upload_data.task['flag']=0;
+				console.log
+				upload_data.article['date_pub']=data.date.ddl[key-1];
+				console.log('选中第'+key+'刊');
+				console.log(upload_data);
+				this.post_data=upload_data;
+				
+				this.props.data.date.article_to_pub[id_article]=data.date.ddl[key-1];
+				this.props.data.date.article_to_pub[data.date.ddl[key-1]]=id_article;
+
+				// {
+				// 	  "task":
+				// 	{
+				// 		   "id": 40,
+				//         "id_article": 4,
+				//         "content": "通过",
+				//         "stat": 6,
+				//         "flag": 0
+				// 	},
+				// 	   “article”:
+				// 	{
+				// 	  “date_pub”:ddl里面的第二项
+				// 	}
+				// }
+
+	            // 1: {姓名:"测试作者一",稿件名:"测试文章1", 栏目: "综述", 刊数: "2"}  
+
+    		} 	
 		      console.log(this.upload_data);
 		}
 	    onChange2(value,e){
@@ -897,12 +964,14 @@ class HasNotDate extends Component{
 	    	if(this.upload_data[key]==undefined){
 	    		this.upload_data[key]={};
 	    	}
-	    	alert(key)
+	    	//alert(key)
 	    	//console.log(this.has_dated);
-	    	console.log(this.props.has_dated)
+	    	//console.log(this.props.has_dated)
 	    	this.upload_data[key]['刊数']=label;
 	    	this.upload_data[key]['姓名']=this.props.has_dated[key]['data'][0];
 	    	this.upload_data[key]['稿件名']=this.props.has_dated[key]['data'][1];
+	    	console.log('让我们看看测试上传数据');
+	    	console.log(this.upload_data)
 	    	if(this.props.has_dated[key]['state']==false){
 	    		this.props.has_dated[key]['state']==1;
 	    		
@@ -919,24 +988,62 @@ class HasNotDate extends Component{
 	    			this.label=this.upload_data[key]['刊数'];
 	    		}
 	    	}
-	    	//this.setState({'has_dated':this.state.has_dated});
-	    	//this.setState({'has_dated':this.props.has_dated});
-    		if(this.upload_data['栏目']!=undefined&&this.upload_data['刊数']!=undefined){
+
+    		if(this.upload_data[key]['栏目']!=undefined&&this.upload_data[key]['刊数']!=undefined){
+    			alert(2);
     			console.log('警告:只有在上传时允许出现')
+    			//console.log(this.props.data);
 	    		console.log(this.upload_data); // 稿件排期上传点
+				
+				let data=this.props.data;
+				let upload_data={'task':{},'article':{}};
+
+				let id_article=data.articles[this.props.has_dated[key]['data'][1]];
+				upload_data.task['id']=data.date.article_to_id[id_article];
+				upload_data.task['id_article']=id_article;
+				upload_data.task['content']='pass';
+				upload_data.task['stat']=6;
+				upload_data.task['flag']=0;
+				upload_data.article['date_pub']=data.date.ddl[key-1];
+				console.log('选中第'+key+'刊');
+				console.log(upload_data);
+				this.post_data=upload_data;
+
+				this.props.data.date.article_to_pub[id_article]=data.date.ddl[key-1];
+				this.props.data.date.article_to_pub[data.date.ddl[key-1]]=id_article;
+
+				// {
+				// 	  "task":
+				// 	{
+				// 		   "id": 40,
+				//         "id_article": 4,
+				//         "content": "通过",
+				//         "stat": 6,
+				//         "flag": 0
+				// 	},
+				// 	   “article”:
+				// 	{
+				// 	  “date_pub”:ddl里面的第二项
+				// 	}
+				// }
 
 	            // 1: {姓名:"测试作者一",稿件名:"测试文章1", 栏目: "综述", 刊数: "2"}  
 
-    		}  		
-    		//console.log(this.upload_data);
+    		} 		    	
+	    	//this.setState({'has_dated':this.state.has_dated});
+	    	//this.setState({'has_dated':this.props.has_dated});
+ 		
+    		console.log(this.upload_data);
 	    }
  		render(){
 			let that=this;
 			console.log('date来了！！');
+			console.log(this.props.data);
 			this.date=this.props.data.date;
 			console.log(this.date);
 
-			this.get_data=this.date.dll.length;
+			//console.log(this.date.ddl)
+			this.get_data=this.date.ddl.length;
 
 			//alert('changed');
 			//console.log(this.state.has_distributed);
@@ -1117,7 +1224,7 @@ class HasDate extends Component{
 		render(){
 			let that=this;
 			this.date=this.props.data.date;
-			this.get_data=this.date.dll.length;
+			this.get_data=this.date.ddl.length;
 			
 			let columns = [{
 			  title: '作者名',
@@ -1161,12 +1268,8 @@ class HasDate extends Component{
 	        			Temp['timetable']=items['state'];
 						data.push(Temp);
 			                                 }
-				                    //}
-			        	                                                
-			        	    
-	                        //console.log(this.data);
-        	             	this.data=data;
-        					this.columns=columns; 
+    	             	this.data=data;
+    					this.columns=columns; 
 	                                                              
         	    }
 
@@ -1382,12 +1485,19 @@ class Main extends Component{
 		    		let flag=this.task1[id_article]['flag'];
 		    		if(stat==6&&role==2&&flag==0)
 		    		{
-		    			console.log(this.props.data.date);
 						this.state.has_dated[k]['state']=false;   // 如果未分配则为false		    			
 		    		}
 		    		else{
 		    			console.log(this.props.data.date);
-						this.state.has_dated[k]['state']=this.props.data.date.article_to_id[id_article];
+		    			console.log(this.props.data.date.article_to_pub);
+		    			console.log(this.props.data.date.article_to_pub[id_article]);
+		    			for(let l=0;l<this.props.data.date.ddl.length;l++){
+		    				if(this.props.data.date.ddl[l]>=this.props.data.date.article_to_pub[id_article]){
+		    					this.state.has_dated[k]['state']=l+1;
+		    					console.log(l+1);
+		    					break;
+		    				}
+		    			}
 						//this.state.has_dated[k]['state']=parseInt(4*Math.random()+1);   // 如果未分配则为false		    			
 		    		}
 		    		//this.state.has_dated[k]['state']=parseInt(4*Math.random()+1)>2?false:2;   // 如果未分配则为false
@@ -1463,7 +1573,7 @@ class Main extends Component{
 			        case "paper-status":return(
 			        							<main>
 			        								<div class='white-back'>
-			        									<Paper_status content={this.props.content}/>
+			        									<Paper_status data={this.props.data} content={this.props.content}/>
 			        								</div>
 			        							</main>
 			        							);

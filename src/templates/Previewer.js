@@ -28,35 +28,66 @@ function obj_get(){
 	return obj 
 }
 
-function ajax_get(url,that){
-	axios.get(url)
-		  .then(function (response) {
-		  	let data=response.data;
-		  	//console.log(data);
-		  	that.state.data=data;
-		    that.setState({'data':data});
-	}.bind(that))
-		.catch(function (error) {
-		    console.log(error);
-		  	alert('下载失败');
-	});
+const URL='http://127.0.0.1:8080';
+
+function ajax_post(url,data,that,callback){
+	axios({
+        method:"POST",
+		headers:{'Content-type':'application/json',},
+        url:URL+url,
+        data:data,
+        //withCredentials:true
+    }).then(function(res){
+    	//alert('post:'+res)
+        console.log(url+'\tPost请求到:');
+        console.log(res);
+        //alert('post-response:'+res);
+        callback(that,res);
+        //ajax_get('/manage/getinfo',this);
+    }).catch(function(error){
+        alert('post失败')
+        console.log(error);
+    });
+}
+function ajax_get(url,that,callback){
+	axios({
+        method:"GET",
+		headers:{'Content-type':'application/json',},
+        url:URL+url,
+        withCredentials:true
+    }).then(function(res){
+    	console.log(url+'\tGet请求到:')
+        console.log(res);
+        //alert('get:'+this.res);
+        callback(that,res);
+
+    }).catch(function(error){
+    	alert('get下载失败')
+        console.log(error);
+    });
+}
+function ajax_post_params(url,data,that,callback=()=>{}){
+	axios({
+        method: 'post',
+        url: URL+url,
+        headers: {
+            'Content-type': 'application/x-www-form-urlencoded',
+        },
+        params:data,
+    })
+	.then(function(res){
+    	//alert('post:'+res)
+        console.log(url+'\tPost请求到:');
+        console.log(res);
+        //alert('post-response:'+res);
+        callback(that,res);
+        //ajax_get('/manage/getinfo',this);
+    }).catch(function(error){
+        alert('post失败')
+        console.log(error);
+    });
 }
 
-function ajax_post(url,data){
-	axios.post(url,data)
-	  .then(function (response) {
-	    console.log(response);
-	  })
-	  .catch(function (error) {
-	    console.log(error);
-	    alert('上传失败');
-	  });
-}
-
-
-class Person extends Component{
-
-}
 
 class Container extends Component{
    constructor(props){
@@ -99,7 +130,9 @@ class Aside extends Component{
 		// alert(t);
 	}
 	componentDidMount() {
-        ajax_get('http://localhost:3000',this);
+        ajax_post_params('/contribute/task',{stat:1,flag:0,page:1},this,(that,res)=>{
+        	console.log(res)
+        })
         //alert('xxxxx');
     }
     handleClick(e){
