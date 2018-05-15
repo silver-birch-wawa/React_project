@@ -1,0 +1,31 @@
+@import '../../node_modules/antd/dist/antd.css';
+
+
+#body{margin:0 auto;height:100rem;}
+#mainfjj {margin:1rem auto;padding:1rem;width:100%;background: white;}
+#first {margin:0rem auto;padding:0rem;width:98%;height:12rem;display: flex;}
+
+#firstLeft {margin:0rem auto;padding:1rem;width:20%;float:left; border-radius:6px;background: white;border:1px solid;font-size:20px ;}
+#SearchBox {margin:0 auto;width:100%;height:100%;border-radius:6px;}
+#firstMiddle {margin:0rem auto;width:50%;padding:1rem;border-radius: 6px;background: white;font-size:20px;border:1px solid;}
+#annoucement {margin:0 auto;width:100%;height:100%;border-radius:6px;background: white;font-size:15px;}
+#notice {margin:0 auto;width:100%;}
+#lineMiddle {width:100%;padding:1rem;background: white;font-size:10px; }
+.anouce{width:100%;}
+#firstRight {margin:0rem auto;padding:1rem;width:20%;border:1px solid;background:white;font-size:20px;border-radius: 6px;}
+#login {margin: 0 auto;}
+#login2 {margin: 0 auto;text-align: center;}
+
+#second { margin:1rem;width:98%;height:20rem;font-size:20px;display: flex;}
+#secondLeft {margin: 1rem;padding:1rem;float:left;font-size:20px;border-radius: 6px;border:1px solid;background: white;height: 100%;width: 30%;}
+
+
+#secondMiddle {margin:1rem ;padding:1rem;height:100%;border-radius:6px;background: white;border: 1px solid;font-size:20px;width:67%;}
+#qikan{width:100%;}
+
+.headline {margin:0rem;float:left;font-size:20px;}
+#third {margin:3rem auto;width:95%;height:15rem;font-size:20px;}
+#thirdMiddle {margin:0 auto;width:100%;height:100%;border-radius:6px;display:flex;background: white;border:1px solid;font-seiz:10px;}
+#expert {padding:2rem;width:20%;font-size:15px;}
+
+

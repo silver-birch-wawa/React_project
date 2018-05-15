@@ -1,0 +1,20 @@
+@import '../../node_modules/antd/dist/antd.css';
+
+#beijing{
+    background: white;
+}
+
+#header {
+    margin:1rem auto;padding:1rem;width:98%;border-radius:6px;border:1px ;
+}
+
+.header-img{
+    width: 100%;
+}
+#JQ{
+    margin:1rem auto;padding:1rem;width:98%;border-radius:6px;border:1px;background: white;
+}
+
+#ojbk{margin:1rem auto;padding:1rem;width:98%;border-radius:6px;border:1px solid;}
+
+

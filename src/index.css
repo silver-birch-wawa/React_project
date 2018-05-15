@@ -5,10 +5,10 @@
 	  background: #f1f1f1;
       height:auto !important;
       min-height:750px;
+      font-size : 80px; 
 	}
-	 html { 
-	 	font-size : 10px; 
-	 	/*overflow:hidden*/
+	 .white-back .ant-tabs-tab{
+	 	font-size: 0.9rem !important;
 	 }
 	 aside .ant-collapse-content-box{
         padding-top: 0px !important;
@@ -45,7 +45,7 @@
     	font-size:0.5rem;
     }
 	 @media only screen and (min-width: 300px){
-	    html { font-size: 18px !important; } 
+	    .html { font-size: 18px !important; } 
 	    headtitle{display:none;}
 	    home{margin-right:0.5rem;}
 	    name{margin-right:2rem;}
@@ -123,12 +123,15 @@
         }
 	 }
 	  @media only screen and (min-width: 641px){ 
-	  	headtitle{display:block;} 
-	    html { font-size: 30px !important; } 
+	  	headtitle{
+	  		display:block;
+	  		font-size:25px!important;
+	  	} 
+	    .html { font-size: 80px !important; } 
 	    home{margin-right:2rem;}
 	    name{margin-right:4rem;}
 	    #check-paper{fontSize:'30px';height:'55px';}
-	    logo{width:15rem;}
+	    logo{width:24rem;}
 
 	    #menu{font-size:0.8rem;font-family:'Comic Sans MS', cursive, sans-serif;}
 	    container{
@@ -273,7 +276,7 @@
       }
     #customers td, #customers th 
       {
-	      font-size:0.6rem;
+	      font-size:1.1rem;
 	      /*border:1px solid #98bf21; */
 	      border-bottom:1px solid #e8e8e8;;
 	      padding:8px 15px 8px 15px;     
@@ -286,7 +289,7 @@
     }
     #customers th 
       {
-	      font-size:0.7rem;
+	      font-size:1.1rem;
 	      padding-top:15px;
 	      padding-bottom:15px;
 	      /*background-color:#A7C942;*/
@@ -303,3 +306,24 @@
     #customers .td-select{
     	/*padding:0px 0px 0px 0px!important;*/
     }
+
+
+
+    /*Header.css*/
+    .appHeader{
+	  	font-family:'Comic Sans MS', cursive, sans-serif;
+        background: white;
+        /*#b0d1e3 浅蓝*/
+        align-items: center;
+        justify-content: space-between;
+        display:flex !important;
+        padding:0 20px;
+        height: 6rem;
+        font-size:20px;
+	  }
+    headtitle{}
+	  nav>ul{list-style: none;align-items: center;display:flex;margin-top: 10px;}
+	  nav>ul>li{padding:10px;}
+	  nav>ul a{text-decoration: none;color:black;align-items:center;display:flex;}
+      home{margin-right:120px;}
+      name{margin-right:120px;}

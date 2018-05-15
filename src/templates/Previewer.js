@@ -11,6 +11,7 @@ import axios from 'axios';
 import Header from './Header';
 import {Menu} from  'antd';
 
+
 const MenuItemGroup = Menu.ItemGroup;
 
 const { MonthPicker, RangePicker } = DatePicker;
@@ -223,8 +224,9 @@ class Aside extends Component{
     handleClick(e){
    	  console.log(e)
       console.log(this.state);
-
-      this.state.content[0]=e['key'];
+   	  if(e['key']!=undefined){
+	      this.state.content[0]=e['key'];
+   	  }
       // alert('state'+this.state.content['distributePaper']);
    	  this.props.change_content(this.state.content,this.state.data);   	  
     }
@@ -631,10 +633,7 @@ class Check_paper extends Component{
 				)
 	        }
 }
-class Main extends Component{
-   static defaultProps = {
-      content:["":[['','','','']]]
-    }
+class Main extends Component{ 
    constructor(props){
    	 super(props);
    	 this.state={'contents':[],'changed':true};

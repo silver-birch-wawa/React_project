@@ -992,6 +992,10 @@ class HasNotDate extends Component{
     		if(this.upload_data[key]['栏目']!=undefined&&this.upload_data[key]['刊数']!=undefined){
     			alert(2);
     			console.log('警告:只有在上传时允许出现')
+    			
+    			// 避免hasdated丢失
+    			this.props.has_dated[key]['state']=true;
+
     			//console.log(this.props.data);
 	    		console.log(this.upload_data); // 稿件排期上传点
 				
@@ -1422,7 +1426,7 @@ class Main extends Component{
    static defaultProps = {
       content:["":[['','','','']]],
       data:{}
-    }
+    } 
    constructor(props){
    	 super(props);
 
@@ -1457,15 +1461,18 @@ class Main extends Component{
    			return;
    		}
    		this.test+=1;
+   		//console.log(this.props.data.task1);
 
-   		for(let l in this.props.data.tasks1.task){
-   			let task1=this.props.data.tasks1.task;
-   			let id_article=task1[l]['id_article'];
-   			// console.log(id_article)
-   			this.task1[id_article]={'stat':task1[l]['stat'],'role':task1[l]['role'],'flag':task1[l]['flag']};
-   			
-   			console.log(this.task1);
-   			//this.task1[this.props.data.articles[id_article]]=id_article;
+   		if(this.props.data.tasks1.task[0]!=undefined){
+	   		for(let l in this.props.data.tasks1.task){
+	   			let task1=this.props.data.tasks1.task;
+	   			let id_article=task1[l]['id_article'];
+	   			// console.log(id_article)
+	   			this.task1[id_article]={'stat':task1[l]['stat'],'role':task1[l]['role'],'flag':task1[l]['flag']};
+	   			
+	   			console.log(this.task1);
+	   			//this.task1[this.props.data.articles[id_article]]=id_article;
+	   		}
    		}
    	    // 获取时间和分配状态
    	    let k=1;
@@ -1530,6 +1537,7 @@ class Main extends Component{
       //let i=this.props.content;
       //alert(data);
       console.log(data);
+      console.log(this.props)
       //data[1]['state']=1;
       // for(let l in this.state.has_dated){
       // 	this.state.has_dated[l]['state']=data[l]['state'];

@@ -1,0 +1,16 @@
+.professorDiv{
+    display: flex;
+}
+.proDiv{
+    width: 50%;
+}
+.proSearch{
+    margin: 0.5rem 0;
+}
+#proDetailDiv{
+    margin-top: 1rem;
+}
+#selectedProP{
+    border-top: 1px solid #e8e8e8;
+    padding-top: 1rem;
+}

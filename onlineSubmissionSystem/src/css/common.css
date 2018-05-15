@@ -1,0 +1,25 @@
+@import '~antd/dist/antd.css';
+
+.centerLayout{
+    padding: 1rem;
+    min-height: 40rem;
+}
+.centerSider{
+    width: 25%;
+}
+.centerMenu{
+    height: 100%;
+}
+.centerContent{
+    background: #fff;
+    padding: 0 2rem;
+    margin-left: 0.5rem;
+}
+.centerTab{
+    padding-top: 1rem;
+    height: 100%;
+}
+.clickHover :hover{
+    cursor: pointer;
+    color: #1890ff;
+}
